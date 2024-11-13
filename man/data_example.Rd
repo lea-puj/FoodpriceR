@@ -31,7 +31,7 @@ Conjunto de datos con 99 alimentos (filas) y 24 variables (columnas). Las column
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(data_example)
 
 }
