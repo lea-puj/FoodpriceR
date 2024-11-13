@@ -29,7 +29,7 @@ EER_LL_example
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(EER_LL_example)
 
 }
