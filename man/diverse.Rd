@@ -26,7 +26,7 @@ Conjunto de datos con dos columnas ("Group" y "Number") y diez filas (grupos de 
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(diverse)
 
 }
