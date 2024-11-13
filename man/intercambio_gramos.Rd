@@ -29,7 +29,7 @@ Conjunto de datos de 178 alimentos (filas) y 6 variables (columnas). Las columna
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(intercambio_gramos)
 
 }
