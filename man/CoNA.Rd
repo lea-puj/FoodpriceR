@@ -28,9 +28,9 @@ LA función CoNA calcula el costo diario mínimo de una dieta adecuada en nutrie
 
 # Retrieve input data
 # Llamando datos
-data(data_example, package = "Foodprice")
-data(EER_LL, package = "Foodprice") 
-data(UL, package = "Foodprice") 
+data(data_example, package = "FoodpriceR")
+data(EER_LL, package = "FoodpriceR") 
+data(UL, package = "FoodpriceR") 
 
 
 # Apply the function to the input data
@@ -74,14 +74,14 @@ kable(Mod$cost)
 
 
 \details{
-The CoNA is estimated by selecting the set of food items that, at the lowest cost, meets not only the Estimated Energy Requirement (EER), but also the lower and upper limits of macro- and micronutrient intake for an individual. The minimum cost of the nutrient-adequate diet is given by the solution of a linear programming model with 2K + 1 linear constraints. (See FoodPrice: An R Package for estimating least-cost diets for further information).
-On the basis of the linear programming model, it is possible to identify limiting nutrients, as well as compute shadow price elasticity (SPE) of each nutrient. By definition, a nutrient is identified as a limiting nutrient if the intake level in optimal diet reaches exactly the lower limit. For the k-th nutrient, the SPE is defined as the percentage change in the objective function evaluated at the optimal basis (optimal CoNA) when the constraint is increased by 1%. (For formal details, see FoodPrice: An R Package for estimating least-cost diets).
+The CoNA is estimated by selecting the set of food items that, at the lowest cost, meets not only the Estimated Energy Requirement (EER), but also the lower and upper limits of macro- and micronutrient intake for an individual. The minimum cost of the nutrient-adequate diet is given by the solution of a linear programming model with 2K + 1 linear constraints. (See FoodpriceR: An R Package for estimating least-cost diets for further information).
+On the basis of the linear programming model, it is possible to identify limiting nutrients, as well as compute shadow price elasticity (SPE) of each nutrient. By definition, a nutrient is identified as a limiting nutrient if the intake level in optimal diet reaches exactly the lower limit. For the k-th nutrient, the SPE is defined as the percentage change in the objective function evaluated at the optimal basis (optimal CoNA) when the constraint is increased by 1%. (For formal details, see FoodpriceR: An R Package for estimating least-cost diets).
 Note that, to guarantee data integration, the nutrient names must be consistent across all parameters (data, EER_LL, UL). Additionally, for the EER parameter, it is not mandatory that the “Sex” column be defined by two categories (0 if male, 1 if female). If only one of the two categories is included, the function computes the CoNA by age groups. In this case specifying the “Sex” column is not needed.
 
 ----
 
-El CoNA se estima seleccionando el conjunto de alimentos que, al costo más bajo, cumple no solo con el Requerimiento Energético Estimado (EER), sino también con los límites inferiores y superiores de la ingesta de macro y micronutrientes para un individuo. El costo mínimo de la dieta adecuada en nutrientes está dado por la solución de un modelo de programación lineal con 2K + 1 restricciones lineales. (Consulte FoodPrice: Un paquete de R para estimar dietas de menor costo para obtener más información).
-Sobre la base del modelo de programación lineal, es posible identificar nutrientes limitantes, así como calcular la elasticidad del precio sombra (SPE) de cada nutriente. Por definición, un nutriente se identifica como nutriente limitante si el nivel de ingesta en la dieta óptima alcanza exactamente el límite inferior. Para el k-ésimo nutriente, la SPE se define como el cambio porcentual en la función objetivo evaluada en la base óptima (CoNA óptimo) cuando la restricción se aumenta en un 1%. (Para detalles formales, consulte FoodPrice: Un paquete de R para estimar dietas de menor costo).
+El CoNA se estima seleccionando el conjunto de alimentos que, al costo más bajo, cumple no solo con el Requerimiento Energético Estimado (EER), sino también con los límites inferiores y superiores de la ingesta de macro y micronutrientes para un individuo. El costo mínimo de la dieta adecuada en nutrientes está dado por la solución de un modelo de programación lineal con 2K + 1 restricciones lineales. (Consulte FoodpriceR: Un paquete de R para estimar dietas de menor costo para obtener más información).
+Sobre la base del modelo de programación lineal, es posible identificar nutrientes limitantes, así como calcular la elasticidad del precio sombra (SPE) de cada nutriente. Por definición, un nutriente se identifica como nutriente limitante si el nivel de ingesta en la dieta óptima alcanza exactamente el límite inferior. Para el k-ésimo nutriente, la SPE se define como el cambio porcentual en la función objetivo evaluada en la base óptima (CoNA óptimo) cuando la restricción se aumenta en un 1%. (Para detalles formales, consulte FoodpriceR: Un paquete de R para estimar dietas de menor costo).
 Tenga en cuenta que, para garantizar la integración de datos, los nombres de los nutrientes deben ser consistentes en todos los parámetros (data, EER_LL, UL). Además, para los parámetros  EER_LL y UL, no es obligatorio que la columna "Sex" esté definida. Si solo se cuenta con una de las dos categorías (por ejemplo, si solo se tienen datos de hombres o solo de mujeres), la función calculará el CoRD por grupos de edad en lugar de tener en cuenta el sexo. En este caso, no es necesario especificar la columna "Sex".
 
 }
