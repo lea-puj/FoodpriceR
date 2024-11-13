@@ -28,7 +28,7 @@ Conjunto de datos de 146 alimentos (filas) y 2 variables (columnas), a saber: "A
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(Mapeo_Precios_Abs)
 
 }
