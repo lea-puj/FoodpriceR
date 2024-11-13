@@ -28,6 +28,6 @@ diverse_example
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(diverse_example)
 }
