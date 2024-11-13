@@ -1,4 +1,4 @@
-Package: Foodprice
+Package: FoodpriceR
 Type: Package
 Title: R library for the estimation of the minimum cost for three types of diets. 
 Version: 1.0.0
@@ -11,6 +11,6 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: No
-URL: https://github.com/Foodprice/Foodprice
+URL: https://github.com/lea-puj/FoodpriceR
 Date:2024-02-26
 
