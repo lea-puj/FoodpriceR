@@ -25,8 +25,8 @@ La función CoCA calcula el costo diario mínimo de una dieta adecuada en calor�
 
 # Retrieve input data
 # Llamando los datos
-data(data_example, package = "Foodprice")
-data(EER, package = "Foodprice") 
+data(data_example, package = "FoodpriceR")
+data(EER, package = "FoodpriceR") 
 
 # Applying the model with the sample data
 # Aplicando el modelo con los datos de ejemplo
@@ -63,12 +63,12 @@ kable(Mod$cost)
 }
 
 \details{
-The CoCA is defined as the minimum cost of an energy-only diet that provides the calories necessary to meet the EER for an individual. The optimal solution to the linear programming model consists of a diet composed of the food item whose price per kilocalorie is minimal (i.e. the least-cost starchy staple food). (See FoodPrice: An R Package for estimating least-cost diets for further information).
+The CoCA is defined as the minimum cost of an energy-only diet that provides the calories necessary to meet the EER for an individual. The optimal solution to the linear programming model consists of a diet composed of the food item whose price per kilocalorie is minimal (i.e. the least-cost starchy staple food). (See FoodpriceR: An R Package for estimating least-cost diets for further information).
 Note that, for the EER parameter, it is not mandatory that the “Sex” column be defined by two categories (0 if male, 1 if female). If only one of the two categories is included, the function computes the CoCA by age groups. In this case specifying the “Sex” column is not needed. 
 
 ----
 
-El CoCA se define como el costo mínimo de una dieta solo de energía que proporciona las calorías necesarias para cumplir con el EER para un individuo. La solución óptima al modelo de programación lineal consiste en una dieta compuesta por el alimento cuyo precio por kilocaloría es mínimo (es decir, el alimento básico de menor costo). (Consulte FoodPrice: Un paquete de R para estimar dietas de menor costo para obtener más información).
+El CoCA se define como el costo mínimo de una dieta solo de energía que proporciona las calorías necesarias para cumplir con el EER para un individuo. La solución óptima al modelo de programación lineal consiste en una dieta compuesta por el alimento cuyo precio por kilocaloría es mínimo (es decir, el alimento básico de menor costo). (Consulte FoodpriceR: Un paquete de R para estimar dietas de menor costo para obtener más información).
 Tenga en cuenta que, para el parámetro EER, no es obligatorio que la columna "Sex" esté definida. Si solo se cuenta con una de las dos categorías (por ejemplo, si solo se tienen datos de hombres o solo de mujeres), la función calculará el CoCA por grupos de edad en lugar de tener en cuenta el sexo. En este caso, no es necesario especificar la columna "Sex".
 
 }
