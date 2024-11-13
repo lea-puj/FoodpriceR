@@ -26,7 +26,7 @@ Conjunto de datos de 779 alimentos (filas) y 41 variables (columnas). Las variab
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(Mapeo_Sipsa_TCAC_GABAS_Grupos)
 
 }
