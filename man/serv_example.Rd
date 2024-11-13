@@ -27,7 +27,7 @@ Conjunto de datos con 220 filas (combinaciones de subgrupos de alimentos y grupo
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(serv_example)
 
 }
