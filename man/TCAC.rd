@@ -29,7 +29,7 @@ Conjunto de datos de 779 alimentos (filas) y 5 variables (columnas), a saber: "C
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(TCAC)
 
 }
