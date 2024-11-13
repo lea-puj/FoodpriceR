@@ -28,7 +28,7 @@ Conjunto de datos con 22 grupos demográficos (filas) y 19 variables (columnas).
 
 \examples{
 
-library(Foodprice)
+library(FoodpriceR)
 head(EER_LL)
 
 }
