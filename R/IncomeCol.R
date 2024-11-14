@@ -139,10 +139,15 @@ IncomeCol  <- function(Month, Year, City) {
                             "Otras formas de trabajo.rda",
                             "Otros ingresos e impuestos.rda",
                             "Tipo de investigación.rda")
-
+    
+    proper_URLencode <- function(archivo) {
+      archivo_utf8 <- iconv(archivo, from = "latin1", to = "UTF-8")
+      return(URLencode(archivo_utf8))
+    }
+    
     # Descargar y cargar cada archivo
     for (archivo in archivos_esperados) {
-      url_archivo <- file.path(ruta_completa, URLencode(archivo))
+      url_archivo <- file.path(ruta_completa, proper_URLencode(archivo))
       temp_file <- tempfile()
       res <- try(GET(url_archivo, write_disk(temp_file, overwrite = TRUE)), silent = TRUE)
 
