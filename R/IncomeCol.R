@@ -328,6 +328,8 @@ IncomeCol  <- function(Month, Year, City) {
   # (Por ejemplo, en el módulo de ocupados: si ocu == NA, entonces ocu == 0)
   columnas_a_actualizar <- c("ocu", "dhv", "no_ocu", "oi", "cg", "l", "oft")
 
+  df_total = as.data.frame(df_total)
+
   # Aplicar reemplazo condicional solo si hay NA
   df_total[columnas_a_actualizar] <- lapply(df_total[columnas_a_actualizar], function(x) {
     ifelse(is.na(x), 0, x)
