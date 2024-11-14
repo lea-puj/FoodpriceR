@@ -4,7 +4,6 @@
 
 IncomeCol  <- function(Month, Year, City) {
 
-
   # Función para validar parámetros
   validar_parametros <- function(parametro, tipo, rango = NULL) {
     if (missing(parametro)) {
@@ -248,19 +247,19 @@ IncomeCol  <- function(Month, Year, City) {
 
   # Omisión de variables
 
-  ocup <- Ocupados %>% select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS, FT))
+  ocup <- Ocupados %>% dplyr::select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS, FT))
 
-  Datos_vivi <- Datos_del_hogar_y_la_vivienda %>% select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, PER, REGIS,FEX_C18))
+  Datos_vivi <- Datos_del_hogar_y_la_vivienda %>% dplyr::select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, PER, REGIS,FEX_C18))
 
-  Noocup <- No_ocupados %>% select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS, FFT))
+  Noocup <- No_ocupados %>% dplyr::select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS, FFT))
 
-  Ot_ing <- Otros_ingresos_e_impuestos %>% select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS))
+  Ot_ing <- Otros_ingresos_e_impuestos %>% dplyr::select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS))
 
-  Fuerza <- Fuerza_trabajo %>% select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS))
+  Fuerza <- Fuerza_trabajo %>% dplyr::select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS))
 
-  Ot_formas <- Otras_formas_de_trabajo %>% select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS))
+  Ot_formas <- Otras_formas_de_trabajo %>% dplyr::select(-c(PERIODO, HOGAR, CLASE, AREA, MES, DPTO, FEX_C18, PER, REGIS))
 
-  Car_gen <- Caracteristicas_generales  %>% select(-c(PERIODO, HOGAR, REGIS))
+  Car_gen <- Caracteristicas_generales  %>% dplyr::select(-c(PERIODO, HOGAR, REGIS))
 
 
   # merge completo
@@ -290,7 +289,7 @@ IncomeCol  <- function(Month, Year, City) {
   df_urbano <- personas %>% filter(clase == 1)
 
   # Renombrar el estrato socioeconómico (P4030S1A1)
-  df_total <- df_urbano %>% mutate(estrato = p4030s1a1) %>% select(-p4030s1a1)
+  df_total <- df_urbano %>% mutate(estrato = p4030s1a1) %>% dplyr::select(-p4030s1a1)
 
   # Recodificar la variable dominio
   # Se busca definir tres categorías:
@@ -1437,7 +1436,7 @@ IncomeCol  <- function(Month, Year, City) {
     for (q in 1:6) {
       set.seed(30524)
       colnames(input)[which(colnames(input) == comp)] <- "y"
-      qreg <- rq(y ~ ., data =  input[, colSums(input != 0) > 0]  %>% select(-c(id)), tau=quant[q])
+      qreg <- rq(y ~ ., data =  input[, colSums(input != 0) > 0]  %>% dplyr::select(-c(id)), tau=quant[q])
       z <- scale(resid(qreg))
       df.aux <- cbind(input, z)
       colnames(df.aux)[which(colnames(df.aux) == "z")] <- paste0("z",q)
@@ -1477,7 +1476,7 @@ IncomeCol  <- function(Month, Year, City) {
   }
 
 
-  qr_impa <- select(df_total, any_of(c("id", "vf_impa", "IMPA", "edad", "edad_sqr", "horas_pa",
+  qr_impa <- dplyr::select(df_total, any_of(c("id", "vf_impa", "IMPA", "edad", "edad_sqr", "horas_pa",
                                        "anios_edu", "bogota", "sexo", "obrero", "domestico", "propia",
                                        "patrono", "meses_trab","jefe", "n", "n_asala", "n_indep",
                                        "n_desoc", "n_edad_5", "n_edad_14_17","n_edad_65", "n_edad_25_ne", "n_superior",
@@ -1488,7 +1487,7 @@ IncomeCol  <- function(Month, Year, City) {
   qr_impa <- qr_impa %>% filter(IMPA > 1)
 
   # Omitir valores faltantes para la estimación
-  qr_impa <- qr_impa %>% filter(vf_impa == 0) %>% select(-vf_impa)
+  qr_impa <- qr_impa %>% filter(vf_impa == 0) %>% dplyr::select(-vf_impa)
 
   # Nos quedamos con las variables cualitativas cuyos niveles > 1 y las variables
   # cuantitativas cuya varianza sea diferente de 1
@@ -1516,7 +1515,7 @@ IncomeCol  <- function(Month, Year, City) {
   var_impa2 <- setdiff(var_impa2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
   # Selección de las nuevas variables  y creación de la variable log(impa)
-  qr_impa <- qr_impa[var_impa2] %>% mutate(ln_impa = log(as.numeric(IMPA))) %>% select(-c(IMPA))
+  qr_impa <- qr_impa[var_impa2] %>% mutate(ln_impa = log(as.numeric(IMPA))) %>% dplyr::select(-c(IMPA))
 
   #---------------------------------#
   # Modelos de Quantile regression #
@@ -1555,7 +1554,7 @@ IncomeCol  <- function(Month, Year, City) {
 
 
 
-  qr_isa=select(df_total,any_of(c("id", "vf_isa", "ISA", "edad", "edad_sqr", "horas_sa",
+  qr_isa=dplyr::select(df_total,any_of(c("id", "vf_isa", "ISA", "edad", "edad_sqr", "horas_sa",
                                   "anios_edu", "bogota", "sexo", "obrero", "domestico", "propia",
                                   "patrono", "meses_trab","jefe", "n", "n_asala", "n_indep",
                                   "n_desoc", "n_edad_5", "n_edad_14_17","n_edad_65", "n_edad_25_ne",
@@ -1566,7 +1565,7 @@ IncomeCol  <- function(Month, Year, City) {
   qr_isa <- qr_isa %>% filter(ISA > 1)
 
   # Omitir valores faltantes para la estimación
-  qr_isa <- qr_isa %>% filter(vf_isa == 0) %>% select(-vf_isa)
+  qr_isa <- qr_isa %>% filter(vf_isa == 0) %>% dplyr::select(-vf_isa)
 
   # Nos quedamos con las variables cualitativas cuyos niveles > 1 y las variables
   # cuantitativas cuya varianza sea diferente de 1
@@ -1590,7 +1589,7 @@ IncomeCol  <- function(Month, Year, City) {
                                   "n_edad_65", "n_edad_25_ne", "n_superior"))
 
   # Selección de las nuevas variables  y creación de la variable log(isa)
-  qr_isa <- qr_isa[var_isa2] %>% mutate(ln_isa = log(as.numeric(ISA))) %>% select(-c(ISA))
+  qr_isa <- qr_isa[var_isa2] %>% mutate(ln_isa = log(as.numeric(ISA))) %>% dplyr::select(-c(ISA))
 
   #---------------------------------#
   # Modelos de regresión cuantílica #
@@ -1617,7 +1616,7 @@ IncomeCol  <- function(Month, Year, City) {
   #----------------------------------------#
 
 
-  qr_ie=select(df_total,any_of(c("id", "vf_ie", "IE", "edad",
+  qr_ie=dplyr::select(df_total,any_of(c("id", "vf_ie", "IE", "edad",
                                  "edad_sqr", "horas_pa", "anios_edu","bogota", "sexo", "obrero",
                                  "domestico", "propia","patrono", "meses_trab",
                                  "jefe", "n", "n_asala", "n_indep", "n_desoc", "n_edad_5", "n_edad_14_17",
@@ -1627,7 +1626,7 @@ IncomeCol  <- function(Month, Year, City) {
   qr_ie <- qr_ie %>% filter(IE > 1)
 
   # Omitir valores faltantes para la estimación
-  qr_ie <- qr_ie %>% filter(vf_ie == 0) %>% select(-vf_ie)
+  qr_ie <- qr_ie %>% filter(vf_ie == 0) %>% dplyr::select(-vf_ie)
 
   # Nos quedamos con las variables cualitativas cuyos niveles > 1 y las variables
   # cuantitativas cuya varianza sea diferente de 1
@@ -1649,7 +1648,7 @@ IncomeCol  <- function(Month, Year, City) {
   var_ie2 <- setdiff(var_ie2, c("propia", "patrono","n_edad_14_17", "n_edad_65", "n_superior","n_edad_25_ne"))
 
   # Selección de las nuevas variables  y creación de la variable log(isa)
-  qr_ie <- qr_ie[var_ie2] %>% mutate(ln_ie = log(as.numeric(IE))) %>% select(-c(IE))
+  qr_ie <- qr_ie[var_ie2] %>% mutate(ln_ie = log(as.numeric(IE))) %>% dplyr::select(-c(IE))
 
   #---------------------------------#
   # Modelos de regresión cuantílica #
@@ -1684,7 +1683,7 @@ IncomeCol  <- function(Month, Year, City) {
   # Selección de variables explicativas
 
 
-  qr_imdi=select(df_total,any_of(c("id", "vf_imdi", "IMDI", "edad",
+  qr_imdi=dplyr::select(df_total,any_of(c("id", "vf_imdi", "IMDI", "edad",
                                    "edad_sqr", "anios_edu",
                                    "bogota", "estu")))
 
@@ -1692,7 +1691,7 @@ IncomeCol  <- function(Month, Year, City) {
   qr_imdi <- qr_imdi %>% filter(IMDI > 1)
 
   # Omitir valores faltantes para la estimación
-  qr_imdi <- qr_imdi %>% filter(vf_imdi == 0) %>% select(-vf_imdi)
+  qr_imdi <- qr_imdi %>% filter(vf_imdi == 0) %>% dplyr::select(-vf_imdi)
 
   # Nos quedamos con las variables cualitativas cuyos niveles > 1 y las variables
   # cuantitativas cuya varianza sea diferente de 1
@@ -1706,7 +1705,7 @@ IncomeCol  <- function(Month, Year, City) {
   # No hay exclusiones adicionales de variables
 
   # Selección de las nuevas variables  y creación de la variable log(isa)
-  qr_imdi <- qr_imdi[var_imdi] %>% mutate(ln_imdi = log(as.numeric(IMDI))) %>% select(-c(IMDI))
+  qr_imdi <- qr_imdi[var_imdi] %>% mutate(ln_imdi = log(as.numeric(IMDI))) %>% dplyr::select(-c(IMDI))
 
   #---------------------------------#
   # Modelos de regresión cuantílica #
@@ -1765,7 +1764,7 @@ IncomeCol  <- function(Month, Year, City) {
   ######## IOF 1
   qr_iof1_o <- qr_iof_o %>% filter(IOF1_o > 1)
 
-  qr_iof1_o <- qr_iof1_o %>% filter(vf_iof1_o == 0) %>% select(-vf_iof1_o)
+  qr_iof1_o <- qr_iof1_o %>% filter(vf_iof1_o == 0) %>% dplyr::select(-vf_iof1_o)
 
   var_iof1_o = c("id", "IOF1_o", colnames(qr_iof1_o[, sapply(qr_iof1_o, nlevels) > 1]),
                  colnames(qr_iof1_o[cvar_iof_o][sapply(qr_iof1_o[cvar_iof_o], var, na.rm = T) != 0]))
@@ -1774,12 +1773,12 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof1_o2 <- setdiff(var_iof1_o2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof1_o <- qr_iof1_o[var_iof1_o2] %>% mutate(ln_iof1_o = log(as.numeric(IOF1_o))) %>% select(-c(IOF1_o))
+  qr_iof1_o <- qr_iof1_o[var_iof1_o2] %>% mutate(ln_iof1_o = log(as.numeric(IOF1_o))) %>% dplyr::select(-c(IOF1_o))
 
   ########  IOF 2
   qr_iof2_o <- qr_iof_o %>% filter(IOF2_o > 1)
 
-  qr_iof2_o <- qr_iof2_o %>% filter(vf_iof2_o == 0) %>% select(-vf_iof2_o)
+  qr_iof2_o <- qr_iof2_o %>% filter(vf_iof2_o == 0) %>% dplyr::select(-vf_iof2_o)
 
   var_iof2_o = c("id", "IOF2_o", colnames(qr_iof2_o[, sapply(qr_iof2_o, nlevels) > 1]),
                  colnames(qr_iof2_o[cvar_iof_o][sapply(qr_iof2_o[cvar_iof_o], var, na.rm = T) != 0]))
@@ -1788,13 +1787,13 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof2_o2 <- setdiff(var_iof2_o2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof2_o <- qr_iof2_o[var_iof2_o2] %>% mutate(ln_iof2_o = log(as.numeric(IOF2_o))) %>% select(-c(IOF2_o))
+  qr_iof2_o <- qr_iof2_o[var_iof2_o2] %>% mutate(ln_iof2_o = log(as.numeric(IOF2_o))) %>% dplyr::select(-c(IOF2_o))
 
 
   ########  IOF 3
   qr_iof3_o <- qr_iof_o %>% filter(IOF3_o > 1)
 
-  qr_iof3_o <- qr_iof3_o %>% filter(vf_iof3_o == 0) %>% select(-vf_iof3_o)
+  qr_iof3_o <- qr_iof3_o %>% filter(vf_iof3_o == 0) %>% dplyr::select(-vf_iof3_o)
 
   var_iof3_o = c("id", "IOF3_o", colnames(qr_iof3_o[, sapply(qr_iof3_o, nlevels) > 1]),
                  colnames(qr_iof3_o[cvar_iof_o][sapply(qr_iof3_o[cvar_iof_o], var, na.rm = T) != 0]))
@@ -1803,14 +1802,14 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof3_o2 <- setdiff(var_iof3_o2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof3_o <- qr_iof3_o[var_iof3_o2] %>% mutate(ln_iof3_o = log(as.numeric(IOF3_o))) %>% select(-c(IOF3_o))
+  qr_iof3_o <- qr_iof3_o[var_iof3_o2] %>% mutate(ln_iof3_o = log(as.numeric(IOF3_o))) %>% dplyr::select(-c(IOF3_o))
 
 
 
   ########  IOF 6
   qr_iof6_o <- qr_iof_o %>% filter(IOF6_o > 1)
 
-  qr_iof6_o <- qr_iof6_o %>% filter(vf_iof6_o == 0) %>% select(-vf_iof6_o)
+  qr_iof6_o <- qr_iof6_o %>% filter(vf_iof6_o == 0) %>% dplyr::select(-vf_iof6_o)
 
   var_iof6_o = c("id", "IOF6_o", colnames(qr_iof6_o[, sapply(qr_iof6_o, nlevels) > 1]),
                  colnames(qr_iof6_o[cvar_iof_o][sapply(qr_iof6_o[cvar_iof_o], var, na.rm = T) != 0]))
@@ -1819,7 +1818,7 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof6_o2 <- setdiff(var_iof6_o2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof6_o <- qr_iof6_o[var_iof6_o2] %>% mutate(ln_iof6_o = log(as.numeric(IOF6_o))) %>% select(-c(IOF6_o))
+  qr_iof6_o <- qr_iof6_o[var_iof6_o2] %>% mutate(ln_iof6_o = log(as.numeric(IOF6_o))) %>% dplyr::select(-c(IOF6_o))
 
 
 
@@ -1908,7 +1907,7 @@ IncomeCol  <- function(Month, Year, City) {
   ######## IOF 1
   qr_iof1_no <- qr_iof_no %>% filter(IOF1_no > 1)
 
-  qr_iof1_no <- qr_iof1_no %>% filter(vf_iof1_no == 0) %>% select(-vf_iof1_no)
+  qr_iof1_no <- qr_iof1_no %>% filter(vf_iof1_no == 0) %>% dplyr::select(-vf_iof1_no)
 
   var_iof1_no = c("id", "IOF1_no", colnames(qr_iof1_no[, sapply(qr_iof1_no, nlevels) > 1]),
                   colnames(qr_iof1_no[cvar_iof_no][sapply(qr_iof1_no[cvar_iof_no], var, na.rm = T) != 0]))
@@ -1917,12 +1916,12 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof1_no2 <- setdiff(var_iof1_no2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof1_no <- qr_iof1_no[var_iof1_no2] %>% mutate(ln_iof1_no = log(as.numeric(IOF1_no))) %>% select(-c(IOF1_no))
+  qr_iof1_no <- qr_iof1_no[var_iof1_no2] %>% mutate(ln_iof1_no = log(as.numeric(IOF1_no))) %>% dplyr::select(-c(IOF1_no))
 
   ########  IOF 2
   qr_iof2_no <- qr_iof_no %>% filter(IOF2_no > 1)
 
-  qr_iof2_no <- qr_iof2_no %>% filter(vf_iof2_no == 0) %>% select(-vf_iof2_no)
+  qr_iof2_no <- qr_iof2_no %>% filter(vf_iof2_no == 0) %>% dplyr::select(-vf_iof2_no)
 
   var_iof2_no = c("id", "IOF2_no", colnames(qr_iof2_no[, sapply(qr_iof2_no, nlevels) > 1]),
                   colnames(qr_iof2_no[cvar_iof_no][sapply(qr_iof2_no[cvar_iof_no], var, na.rm = T) != 0]))
@@ -1931,13 +1930,13 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof2_no2 <- setdiff(var_iof2_no2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof2_no <- qr_iof2_no[var_iof2_no2] %>% mutate(ln_iof2_no = log(as.numeric(IOF2_no))) %>% select(-c(IOF2_no))
+  qr_iof2_no <- qr_iof2_no[var_iof2_no2] %>% mutate(ln_iof2_no = log(as.numeric(IOF2_no))) %>% dplyr::select(-c(IOF2_no))
 
 
   ########  IOF 3
   qr_iof3_no <- qr_iof_no %>% filter(IOF3_no > 1)
 
-  qr_iof3_no <- qr_iof3_no %>% filter(vf_iof3_no == 0) %>% select(-vf_iof3_no)
+  qr_iof3_no <- qr_iof3_no %>% filter(vf_iof3_no == 0) %>% dplyr::select(-vf_iof3_no)
 
   var_iof3_no = c("id", "IOF3_no", colnames(qr_iof3_no[, sapply(qr_iof3_no, nlevels) > 1]),
                   colnames(qr_iof3_no[cvar_iof_no][sapply(qr_iof3_no[cvar_iof_no], var, na.rm = T) != 0]))
@@ -1946,14 +1945,14 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof3_no2 <- setdiff(var_iof3_no2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof3_no <- qr_iof3_no[var_iof3_no2] %>% mutate(ln_iof3_no = log(as.numeric(IOF3_no))) %>% select(-c(IOF3_no))
+  qr_iof3_no <- qr_iof3_no[var_iof3_no2] %>% mutate(ln_iof3_no = log(as.numeric(IOF3_no))) %>% dplyr::select(-c(IOF3_no))
 
 
 
   ########  IOF 6
   qr_iof6_no <- qr_iof_no %>% filter(IOF6_no > 1)
 
-  qr_iof6_no <- qr_iof6_no %>% filter(vf_iof6_no == 0) %>% select(-vf_iof6_no)
+  qr_iof6_no <- qr_iof6_no %>% filter(vf_iof6_no == 0) %>% dplyr::select(-vf_iof6_no)
 
   var_iof6_no = c("id", "IOF6_no", colnames(qr_iof6_no[, sapply(qr_iof6_no, nlevels) > 1]),
                   colnames(qr_iof6_no[cvar_iof_no][sapply(qr_iof6_no[cvar_iof_no], var, na.rm = T) != 0]))
@@ -1962,7 +1961,7 @@ IncomeCol  <- function(Month, Year, City) {
 
   var_iof6_no2 <- setdiff(var_iof6_no2, c("n_edad_14_17","n_edad_65", "n_superior","n_edad_25_ne"))
 
-  qr_iof6_no <- qr_iof6_no[var_iof6_no2] %>% mutate(ln_iof6_no = log(as.numeric(IOF6_no))) %>% select(-c(IOF6_no))
+  qr_iof6_no <- qr_iof6_no[var_iof6_no2] %>% mutate(ln_iof6_no = log(as.numeric(IOF6_no))) %>% dplyr::select(-c(IOF6_no))
 
 
 
@@ -2249,7 +2248,7 @@ IncomeCol  <- function(Month, Year, City) {
     # vi1 = valor imputado nuevo
 
     # Creación de dataset base
-    df.base <- original %>% select(c("id", logical1, logical2, logical3, logical4, dom,
+    df.base <- original %>% dplyr::select(c("id", logical1, logical2, logical3, logical4, dom,
                                      toupper(var), paste0("imp_",var)))
 
     # Crear variable para los valores a imputar
@@ -2264,12 +2263,12 @@ IncomeCol  <- function(Month, Year, City) {
                                     eval(parse(text = logical4)) == 1)
 
     # Eliminar variables para la condición lógica
-    df.base <- df.base %>% select(-c(logical1, logical2, logical3, logical4))
+    df.base <- df.base %>% dplyr::select(-c(logical1, logical2, logical3, logical4))
 
     # Crear variables faltantes según la varible imp_impa
     df.base$vn1 <-ifelse(df.base$i == 1, NA, df.base$vn1)
 
-    imputed.df <- VIM::hotdeck(df.base %>% select(id, vn1,
+    imputed.df <- VIM::hotdeck(df.base %>% dplyr::select(id, vn1,
                                                   dom),
                                variable = "vn1", domain_var = dom)
 
@@ -2370,7 +2369,7 @@ IncomeCol  <- function(Month, Year, City) {
   # Definición de actividad: Cesante-Aspirante, Desocupado, Estudiante, Hogar
   df_total$llave_imdi <- (as.numeric(df_total$dom_terr)*100) + (as.numeric(df_total$dom_estrato)*10) + df_total$p6240
 
-  test <- df_total %>% select(dom_terr, p6240, des_ina,
+  test <- df_total %>% dplyr::select(dom_terr, p6240, des_ina,
                               llave_imdi) %>% filter(des_ina == 1)
 
   imdi_output <- comp_f(original = df_total, var = "imdi",
@@ -2886,7 +2885,7 @@ IncomeCol  <- function(Month, Year, City) {
 
 
   dataset_def_deciles$per_capita_year = dataset_def_deciles$ingreso_alimentos_per_capita*12
-  dataset_def_deciles= dataset_def_deciles %>% select(deciles,id_hogar,nug,ingresos,per_capita,share,ingreso_alimentos,ingreso_alimentos_per_capita,per_capita_year)
+  dataset_def_deciles= dataset_def_deciles %>% dplyr::select(deciles,id_hogar,nug,ingresos,per_capita,share,ingreso_alimentos,ingreso_alimentos_per_capita,per_capita_year)
 
 
   # cambiando nombres
