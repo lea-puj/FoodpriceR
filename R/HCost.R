@@ -134,39 +134,8 @@ HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL
 
 
     modelo_3 <- suppress_all(FoodpriceR::CoRD(data = Data_mes_año, diverse = Diverse, serv = Serv)$cost)
-
-    # Aplicar mapeo de grupos demográficos si Data es NULL
-    if (is.null(Data)) {
-
-      mapeo_grupos <- list(
-        ">70 años" = "> 70 años",
-        "1 a 3 años" = "1-3 años",
-        "14 a 18 años" = "14-18 años",
-        "19 a 30 años" = "19-30 años",
-        "31 a 50 años" = "31-50 años",
-        "4 a 8 años" = "5 -8 años",
-        "51 a 70 años" = "51-70 años",
-        "9 a 13 años" = "9-13 años",
-        "gestantes < 18 años" = "Gestantes 14-18 años",
-        "gestantes 19 a 30 años" = "Gestantes 19-30 años",
-        "gestantes 31 a 50 años" = "Gestantes 31-50 años",
-        "lactantes < 18 años" = "Lactantes 14-18 años",
-        "lactantes 19 a 30 años" = "Lactantes 19-30 años",
-        "lactantes 31 a 50 años" = "Lactantes 31-50 años"
-      )
-
-      aplicar_mapeo <- function(df, mapeo) {
-        df$Demo_Group <- mapeo[df$Demo_Group]
-        return(df)
-      }
-
-      Household_mod_3 <- aplicar_mapeo(Household, mapeo_grupos)
-
-    } else {
-      Household_mod_3 <- Household
-    }
-
-    model_dieta_3 <- merge(Household_mod_3, modelo_3[c("Demo_Group", "Sex", "cost_day")],
+    
+    model_dieta_3 <- merge(Household, modelo_3[c("Demo_Group", "Sex", "cost_day")],
                            by = c("Demo_Group", "Sex"),
                            all.x = TRUE, all.y = FALSE)
     model_dieta_3$hogar_total <- sum(as.numeric(model_dieta_3$cost_day))
