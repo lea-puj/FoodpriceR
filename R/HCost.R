@@ -83,8 +83,8 @@ HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL
     validar_parametros(Year, "numeric", c(2022, 2023))
     validar_parametros(City, "character")
 
-    cat("\n Se utilizará la función DataCol del paquete Foodprice para estimaciones.\n")
-    Data_mes_año <- suppress_all(Foodprice::DataCol(Month = Month, Year = Year, City = City))
+    cat("\n Se utilizará la función DataCol del paquete FoodpriceR para estimaciones.\n")
+    Data_mes_año <- suppress_all(FoodpriceR::DataCol(Month = Month, Year = Year, City = City))
 
   } else {
     Data_mes_año <- Data
@@ -93,7 +93,7 @@ HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL
   # Ejecutar modelo CoCA si ERR no es NULL
   if (!is.null(ERR)) {
     cat(" Ejecutando modelo CoCA. \n")
-    modelo_1 <- suppress_all(Foodprice::CoCA(data = Data_mes_año, EER = ERR)$cost)
+    modelo_1 <- suppress_all(FoodpriceR::CoCA(data = Data_mes_año, EER = ERR)$cost)
 
     model_dieta_1 <- merge(Household, modelo_1[c("Demo_Group", "Sex", "cost_day")],
                            by = c("Demo_Group", "Sex"),
@@ -113,7 +113,7 @@ HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL
     cat(" Ejecutando modelo CoNA.\n")
 
     # Uso de la función
-    modelo_2 <- suppress_all(Foodprice::CoNA(data = Data_mes_año, EER_LL = EER_LL, UL = UL)$cost)
+    modelo_2 <- suppress_all(FoodpriceR::CoNA(data = Data_mes_año, EER_LL = EER_LL, UL = UL)$cost)
 
     model_dieta_2 <- merge(Household, modelo_2[c("Demo_Group", "Sex", "cost_day")],
                            by = c("Demo_Group", "Sex"),
@@ -133,7 +133,7 @@ HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL
     cat(" Ejecutando modelo CoRD.\n")
 
 
-    modelo_3 <- suppress_all(Foodprice::CoRD(data = Data_mes_año, diverse = Diverse, serv = Serv)$cost)
+    modelo_3 <- suppress_all(FoodpriceR::CoRD(data = Data_mes_año, diverse = Diverse, serv = Serv)$cost)
 
     # Aplicar mapeo de grupos demográficos si Data es NULL
     if (is.null(Data)) {
