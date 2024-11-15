@@ -152,7 +152,7 @@ CoRD=function(data,serv,diverse,exclude=NULL){
     
     # Requerimiento y edad
     Req_Int_i=serv
-    Age=levels(as.factor(Req_Int_i$Age))
+    Age=levels(as.factor(as.character(Req_Int_i$Age)))
     
     
     #---------------- VALIDACIÓN Y SELECIÓN DE GRUPOS----------------
