@@ -354,7 +354,10 @@ CoRD=function(data,serv,diverse,exclude=NULL){
         Cantidad_g = Number_Serving * Datos_grupo_i$Serving_g
         
         # Crear dataframe directamente y agregar las filas a CoRD_INT_F
-        if ("Energy" %in% colnames(data)) {CoRD_F = cbind(Datos_grupo_i, Number_Serving = Number_Serving, Cantidad_g = Cantidad_g,Demo_Group=Age[i],Sex=sexo_nombre,Energy=Datos_grupo_i$Energy,Serving_g=Datos_grupo_i$Serving_g) }else{CoRD_F = cbind(Datos_grupo_i, Number_Serving = Number_Serving, Cantidad_g = Cantidad_g,Demo_Group=Age[i],Sex=sexo_nombre)}
+        if ("Energy" %in% colnames(data)) {CoRD_F = cbind(Datos_grupo_i %>% select(-c("Energy",
+                                                                                      "Serving_g")),
+                                                          Number_Serving = Number_Serving, Cantidad_g = Cantidad_g,Demo_Group=Age[i],
+                                                          Sex=sexo_nombre,Energy=Datos_grupo_i$Energy,Serving_g=Datos_grupo_i$Serving_g) }else{CoRD_F = cbind(Datos_grupo_i, Number_Serving = Number_Serving, Cantidad_g = Cantidad_g,Demo_Group=Age[i],Sex=sexo_nombre)}
         
         CoRD_INT = rbind(CoRD_INT, CoRD_F)
         
@@ -370,7 +373,7 @@ CoRD=function(data,serv,diverse,exclude=NULL){
 
     for (E in Age) {
       # Filtrar el dataframe por edad
-      df_edad <- subset(CoRD_INT, Age == E)
+      df_edad <- subset(CoRD_INT, Demo_Group == E)
       
       # Calcular el costo para la edad actual
       costo_edad <- sum(df_edad$Price_serving * df_edad$Number_Serving)
