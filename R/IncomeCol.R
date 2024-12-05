@@ -663,7 +663,7 @@ IncomeCol  <- function(Month, Year, City) {
   # Si las horas trabajadas son faltantes (=== 999), entonces se imputa el promedio en grupos de p6430
 
   # Calcular el promedio por grupos de acuerdo con p6430
-  avg_horas_pa <- df_total %>% group_by(p6430) %>% summarize(avg = mean(horas_pa, na.rm = T))
+  avg_horas_pa <- df_total %>% group_by(p6430) %>% dplyr::summarize(avg = mean(horas_pa, na.rm = T))
 
 
   # Imputación de valores faltantes en horas trabajadas
@@ -672,7 +672,8 @@ IncomeCol  <- function(Month, Year, City) {
   # Reemplazo condicional para horas_pa
   for (i in 1:8) {
     if (any(avg_horas_pa$p6430 == i)) {
-      replacement_value <- avg_horas_pa$avg[avg_horas_pa$p6430 == i]
+      replacement_value <- avg_horas_pa$avg[avg_horas_pa$p6430 == i &
+                                           !is.na(avg_horas_pa$p6430)]
       df_total$horas_pa[df_total$horas_pa == 999 & df_total$p6430 == i] <- replacement_value
     }
   }
