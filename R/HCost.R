@@ -1,4 +1,4 @@
-HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL, ERR = NULL, EER_LL = NULL, UL = NULL, Serv = NULL, Diverse = NULL) {
+HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL, ERR = NULL, EER_LL = NULL, UL = NULL, Serv = NULL, Diverse = NULL, exclude=NULL) {
 
   # Carga de librerías
   Librerias_base <- c("here", "readxl", "tidyverse", "knitr", "moments", "xgboost", "maditr",
@@ -86,9 +86,18 @@ HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL
     cat("\n Se utilizará la función DataCol del paquete FoodpriceR para estimaciones.\n")
     Data_mes_año <- suppress_all(FoodpriceR::DataCol(Month = Month, Year = Year, City = City))
 
+  } else if (!is.null(exclude)) {
+    # Validar si exclude es un vector
+    if (!is.vector(exclude)) {
+      stop("The 'exclude' parameter must be a vector.")
+    }
+
+    # Filtrar los alimentos que no están en exclude
+    Data_mes_año <- Data[!(Data$Food %in% exclude), ]
   } else {
     Data_mes_año <- Data
   }
+
 
   # Ejecutar modelo CoCA si ERR no es NULL
   if (!is.null(ERR)) {
@@ -134,7 +143,7 @@ HCost <- function(Month = NULL, Year = NULL, City = NULL, Household, Data = NULL
 
 
     modelo_3 <- suppress_all(FoodpriceR::CoRD(data = Data_mes_año, diverse = Diverse, serv = Serv)$cost)
-    
+
     model_dieta_3 <- merge(Household, modelo_3[c("Demo_Group", "Sex", "cost_day")],
                            by = c("Demo_Group", "Sex"),
                            all.x = TRUE, all.y = FALSE)
