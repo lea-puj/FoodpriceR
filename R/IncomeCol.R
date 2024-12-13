@@ -2,10 +2,10 @@
 #           Definición de la función             #
 #------------------------------------------------#
 
-IncomeCol  <- function(Month, Year, City) {
+IncomeCol  <- function(Month, Year, City, Share.n=NULL) {
 
   # Función para validar parámetros
-  validar_parametros <- function(parametro, tipo, rango = NULL) {
+  validar_parametros <- function(parametro, tipo, rango = NULL, longitud = NULL) {
     if (missing(parametro)) {
       stop("Parameter is missing: ", deparse(substitute(parametro)))
     }
@@ -28,13 +28,26 @@ IncomeCol  <- function(Month, Year, City) {
         stop(paste(deparse(substitute(parametro)), " Debe estar en el rango ", rango[1], " - ", rango[2]))
       }
     }
+
+    # Validación de longitud si se proporciona
+    if (!is.null(longitud)) {
+      if (!is.vector(parametro)) {
+        stop(paste(deparse(substitute(parametro)), " debe ser un vector para validar su longitud."))
+      }
+      if (length(parametro) != longitud) {
+        stop(paste(deparse(substitute(parametro)), " debe tener una longitud de exactamente ", longitud))
+      }
+    }
   }
 
   # Verificación de parámetros
   validar_parametros(Month, "numeric", c(1, 12))
   validar_parametros(Year, "numeric", c(2022, 2023))
   validar_parametros(City, "character")
-
+  # Solo validar Share.n si no es NULL
+  if (!is.null(Share.n)) {
+    validar_parametros(Share.n, "vector", longitud = 10)  # Validar longitud solo si Share.n no es NULL
+  }
 
   # Mensaje de inicio del módulo
   Sys.sleep(1);cat("Módulo 0: Carga de librerías ")
@@ -145,7 +158,7 @@ IncomeCol  <- function(Month, Year, City) {
       archivo_utf8 <- iconv(archivo, from = "latin1", to = "UTF-8")
       return(URLencode(archivo_utf8))
     }
-    
+
     # Descargar y cargar cada archivo
     for (archivo in archivos_esperados) {
       url_archivo <- file.path(ruta_completa, URLencode(archivo))
@@ -673,7 +686,8 @@ IncomeCol  <- function(Month, Year, City) {
   for (i in 1:8) {
     if (any(avg_horas_pa$p6430 == i)) {
       replacement_value <- avg_horas_pa$avg[avg_horas_pa$p6430 == i &
-                                           !is.na(avg_horas_pa$p6430)]
+                                            !is.na(avg_horas_pa$p6430)]
+
       df_total$horas_pa[df_total$horas_pa == 999 & df_total$p6430 == i] <- replacement_value
     }
   }
@@ -2637,239 +2651,265 @@ IncomeCol  <- function(Month, Year, City) {
   #----------------------------------------------------------------------------------#
   #    Modulo 2: Proporcion del gasto en alimentación -ECV                           #
   #----------------------------------------------------------------------------------#
-  Sys.sleep(1);cat("Módulo  4: Cálculo del gasto en alimentación con base en la ECV")
-
-  descargar_y_cargar_datos_ecv <- function(Year) {
-    # Función para crear o reusar un entorno
-    crear_o_reusar_entorno <- function(nombre_entorno) {
-      if (!exists(nombre_entorno, envir = globalenv())) {
-        assign(nombre_entorno, new.env(parent = emptyenv()), envir = globalenv())
-      }
-      return(get(nombre_entorno, envir = globalenv()))
+  if (!is.null(Share.n)) {
+    # Validar que share.n tenga exactamente 10 valores
+    if (length(Share.n) != 10) {
+      stop("El vector 'Share.n' debe tener exactamente 10 valores (uno por cada decil).")
     }
 
-    # Crear el nombre del entorno principal
-    data_ECV <- crear_o_reusar_entorno("data_ECV")
+    # Crear el data.frame con las proporciones asignadas manualmente
+    new_share <- data.frame(
+      decil = c("Decil 1", "Decil 2", "Decil 3", "Decil 4",
+                "Decil 5", "Decil 6", "Decil 7", "Decil 8",
+                "Decil 9", "Decil 10"),
+      share = Share.n
+    )
+
+    # Crear un DataFrame con los niveles de los deciles
+    deciles_gasto <- data.frame(
+      deciles = levels(as.factor(new_share$decil))
+    )
+
+    # Hacer el merge con el DataFrame `new_share` para añadir las proporciones
+    deciles_gasto <- merge(deciles_gasto, new_share, by.x = "deciles", by.y = "decil", all.x = TRUE)
+
+
+  } else {
+    Sys.sleep(1);cat("Módulo  4: Cálculo del gasto en alimentación con base en la ECV")
+
+    descargar_y_cargar_datos_ecv <- function(Year) {
+      # Función para crear o reusar un entorno
+      crear_o_reusar_entorno <- function(nombre_entorno) {
+        if (!exists(nombre_entorno, envir = globalenv())) {
+          assign(nombre_entorno, new.env(parent = emptyenv()), envir = globalenv())
+        }
+        return(get(nombre_entorno, envir = globalenv()))
+      }
+
+      # Crear el nombre del entorno principal
+      data_ECV <- crear_o_reusar_entorno("data_ECV")
+      envr_name <- paste0("ECV_", 2022)
+
+      # Verificar si ya existen los datos en el entorno específico
+      if (exists(envr_name, envir = data_ECV)) {
+        cat(".  Los datos para", envr_name, "ya existen en el entorno. No se realizará la descarga nuevamente.\n")
+        return(invisible())
+      }
+
+      # Crear el entorno específico para el año
+      assign(envr_name, new.env(parent = emptyenv()), envir = data_ECV)
+
+      # Crear la URL base para la descarga
+      base_url <- "https://raw.githubusercontent.com/JuanArchis/Datos_GEIH_Foodprice2/main"
+      carpeta_anio <- paste0("ECV_", 2022)
+
+      # Lista de archivos esperados
+      archivos_esperados <- c("Caracteristicas y composicion del hogar.rda",
+                              "Datos de la vivienda.rda",
+                              "Gastos de los hogares (Gastos por Item).rda",
+                              "Servicios del hogar.rda")
+
+      # Descargar y cargar cada archivo
+      for (archivo in archivos_esperados) {
+        url_archivo <- file.path(base_url, carpeta_anio, URLencode(archivo))
+        temp_file <- tempfile()
+        res <- try(GET(url_archivo, write_disk(temp_file, overwrite = TRUE)), silent = TRUE)
+
+        if (inherits(res, "try-error")) {
+          cat("No se pudo descargar el archivo:", archivo, "\n")
+          next
+        }
+
+        if (res$status_code == 200) {
+          load(temp_file)
+          nombre_variable <- sub("\\.rda$", "", basename(archivo))
+          nombre_variable <- gsub("[^[:alnum:]]", "_", nombre_variable)
+
+          # Asignar el contenido del archivo cargado a la variable en el entorno
+          assign(nombre_variable, as.data.frame(data), envir = get(envr_name, envir = data_ECV))
+        }
+      }
+
+      # Eliminar el archivo temporal
+      unlink(temp_file)
+    }
+
+    # Ejecutar la función para descargar y cargar datos
+    descargar_y_cargar_datos_ecv(2022)
+
+    #-------------------------------#
+    #     Depuración previa         #
+    #-------------------------------#
+
+    # Obtener nombres de los dataframes en el entorno específico ECV_Year si existe
     envr_name <- paste0("ECV_", 2022)
 
-    # Verificar si ya existen los datos en el entorno específico
-    if (exists(envr_name, envir = data_ECV)) {
-      cat(".  Los datos para", envr_name, "ya existen en el entorno. No se realizará la descarga nuevamente.\n")
-      return(invisible())
+
+    gastos_hogares <- get(envr_name, envir = data_ECV)$Gastos_de_los_hogares__Gastos_por_Item_
+    hogares <- get(envr_name, envir = data_ECV)$Caracteristicas_y_composicion_del_hogar
+    vivienda <- get(envr_name, envir = data_ECV)$Datos_de_la_vivienda
+    servicios <- get(envr_name, envir = data_ECV)$Servicios_del_hogar
+
+
+
+
+    # Lista de ciudades y sus códigos correspondientes
+    ciudades_codigos <- c("63" = "ARMENIA", "8" = "BARRANQUILLA", "11" = "BOGOTA",
+                          "68" = "BUCARAMANGA", "76" = "CALI", "13" = "CARTAGENA",
+                          "54" = "CUCUTA", "18" = "FLORENCIA", "73" = "IBAGUE",
+                          "17" = "MANIZALES", "5" = "MEDELLIN", "23" = "MONTERIA",
+                          "41" = "NEIVA", "52" = "PASTO", "66" = "PEREIRA",
+                          "19" = "POPAYAN", "27" = "QUIBDO", "44" = "RIOHACHA",
+                          "47" = "SANTA MARTA", "70" = "SINCELEJO", "15" = "TUNJA",
+                          "20" = "VALLEDUPAR", "50" = "VILLAVICENCIO")
+
+    # Función para obtener el código de ciudad a partir de la ciudad asignada
+    obtener_codigo_ciudad <- function(ciudad_asignada, ciudades_codigos) {
+      codigo <- names(ciudades_codigos)[match(ciudad_asignada, unname(ciudades_codigos))]
+      return(codigo)
     }
 
-    # Crear el entorno específico para el año
-    assign(envr_name, new.env(parent = emptyenv()), envir = data_ECV)
+    codigo_ciudad=obtener_codigo_ciudad(ciudad_asignada,ciudades_codigos)
 
-    # Crear la URL base para la descarga
-    base_url <- "https://raw.githubusercontent.com/JuanArchis/Datos_GEIH_Foodprice2/main"
-    carpeta_anio <- paste0("ECV_", 2022)
+    vivienda_ciudad <- vivienda %>% filter(P1_DEPARTAMENTO == as.numeric(codigo_ciudad))
+    gastos_hogares_ciudad = gastos_hogares %>% filter(DIRECTORIO %in% vivienda_ciudad$DIRECTORIO)
+    servicios_ciudad = servicios %>% filter(DIRECTORIO %in% vivienda_ciudad$DIRECTORIO)
 
-    # Lista de archivos esperados
-    archivos_esperados <- c("Caracteristicas y composicion del hogar.rda",
-                            "Datos de la vivienda.rda",
-                            "Gastos de los hogares (Gastos por Item).rda",
-                            "Servicios del hogar.rda")
+    # Selección de las variables de interés
+    vivienda_ciudad_1 = vivienda_ciudad[c("DIRECTORIO", "SECUENCIA_ENCUESTA", "SECUENCIA_P",
+                                          "ORDEN", "P1_DEPARTAMENTO", "CLASE", "FEX_C",
+                                          "CANT_HOG_COMPLETOS", "CANT_HOGARES_VIVIENDA")]
 
-    # Descargar y cargar cada archivo
-    for (archivo in archivos_esperados) {
-      url_archivo <- file.path(base_url, carpeta_anio, URLencode(archivo))
-      temp_file <- tempfile()
-      res <- try(GET(url_archivo, write_disk(temp_file, overwrite = TRUE)), silent = TRUE)
+    gastos_hogares_ciudad_1 = gastos_hogares_ciudad[c("DIRECTORIO", "SECUENCIA_ENCUESTA", "SECUENCIA_P",
+                                                      "ORDEN", "FEX_C", "P3204", "P3204S1", "P3204S2")]
 
-      if (inherits(res, "try-error")) {
-        cat("No se pudo descargar el archivo:", archivo, "\n")
-        next
-      }
+    servicios_ciudad_1 = servicios_ciudad[c("DIRECTORIO", "SECUENCIA_ENCUESTA", "SECUENCIA_P", "ORDEN",
+                                            "I_HOGAR", "I_UGASTO", "PERCAPITA", "I_OU")]
 
-      if (res$status_code == 200) {
-        load(temp_file)
-        nombre_variable <- sub("\\.rda$", "", basename(archivo))
-        nombre_variable <- gsub("[^[:alnum:]]", "_", nombre_variable)
+    ###############################
+    ## Cálculo del ingreso para  ##
+    ##       cada hogar          ##
+    ###############################
+    # construir id
+    servicios_ciudad_1$id = paste0(servicios_ciudad$DIRECTORIO,
+                                   "-",servicios_ciudad$ORDEN)
 
-        # Asignar el contenido del archivo cargado a la variable en el entorno
-        assign(nombre_variable, as.data.frame(data), envir = get(envr_name, envir = data_ECV))
-      }
+    # ingresos hogares
+    hogar_ingresos = servicios_ciudad_1[c("id", "I_HOGAR")]
+
+    ###########################################
+    ## Cálculo del gasto total y  gasto      ##
+    ##   en alimentación para cada hogar     ##
+    ###########################################
+
+
+    # construir id
+    gastos_hogares_ciudad_1$id = paste0(gastos_hogares_ciudad_1$DIRECTORIO,
+                                        "-",gastos_hogares_ciudad_1$SECUENCIA_P)
+
+    # reemplazar NA por 0 en las variables de gasto
+    gastos_hogares_ciudad_1$P3204S1[is.na(gastos_hogares_ciudad_1$P3204S1)] = 0
+
+    gastos_hogares_ciudad_1$P3204S2[is.na(gastos_hogares_ciudad_1$P3204S2)] = 0
+
+    # construir base de datos de recepción
+    hogar_gastos = data.frame(levels(as.factor(gastos_hogares_ciudad_1$id)))
+    hogar_gastos$gasto_total = NA
+    hogar_gastos$gasto_alimentos = NA
+    colnames(hogar_gastos) = c("id", "gasto_total", "gasto_alimentos")
+
+
+    for (k in 1:nrow(hogar_gastos)) {
+      # bucle para gasto total
+      df_1 = data.frame()
+      df_1 = gastos_hogares_ciudad_1 %>% filter(id %in% hogar_gastos$id[k])
+      hogar_gastos$gasto_total[k] = sum(df_1$P3204S1) + sum(df_1$P3204S2)
+      #bucle para gasto en alimentos
+      df_2 = df_1 %>% filter(P3204 %in% c(1:26,32))
+      hogar_gastos$gasto_alimentos[k] = sum(df_2$P3204S1) + sum(df_2$P3204S2)
     }
 
-    # Eliminar el archivo temporal
-    unlink(temp_file)
+    ###################################
+    ## Cálculo de las proporciones   ##
+    ## (desde el ingreso y el gasto) ##
+    ###################################
+
+    # recuperar el factor de expansión
+    hogar_gastos_dep = merge(hogar_gastos, gastos_hogares_ciudad_1[c("id","FEX_C")], by = "id")
+    hogar_gastos_dep = hogar_gastos_dep[!duplicated(hogar_gastos_dep),]
+
+    # eliminar valores nulos en alimentación
+    #hogar_gastos_dep = hogar_gastos_dep %>% filter(gasto_alimentos != 0)
+
+    # merge gastos-ingresos
+    gastos_ingresos = merge(hogar_gastos_dep, hogar_ingresos, by = "id")
+
+    # implementación del factor de expansión
+
+    gastos_ingresos_exp = as.data.frame(matrix(ncol = ncol(gastos_ingresos)))
+    colnames(gastos_ingresos_exp) = colnames(gastos_ingresos)
+
+
+    gastos_ingresos_exp <- gastos_ingresos %>%
+      dplyr::slice(rep(1:n(), times = gastos_ingresos$FEX_C)) %>%
+      na.omit()
+
+
+    # proporción del gasto
+    gastos_ingresos_exp$share_gasto = gastos_ingresos_exp$gasto_alimentos/gastos_ingresos_exp$gasto_total
+
+
+    # Nota: los resultados para la proporción del ingresos no tiene resultados realistas
+
+    ############
+    ## Ad hoc ##
+    ############
+
+    # eliminar gastos e ingresos nulos
+    #gastos_ingresos_exp = gastos_ingresos_exp %>% filter(I_HOGAR != 0)
+    #gastos_ingresos_exp = gastos_ingresos_exp %>% filter(gasto_total != 0)
+
+
+    ############################################
+    ## Calcular deciles segun la clasificacion ##
+    ##        derivada de la GEIH       ##
+    #############################################
+
+    # diferenciar los ingresos del hogar segun la clasificacion por
+    # deciles y quintiles de la GEIH
+    deciles = quantile(dataset_2$ingresos, probs = seq(0, 1, by = .1))
+
+    gastos_ingresos_exp = gastos_ingresos_exp %>% mutate(deciles = cut(I_HOGAR, deciles, c("Decil 1", "Decil 2",
+                                                                                           "Decil 3", "Decil 4",
+                                                                                           "Decil 5", "Decil 6",
+                                                                                           "Decil 7", "Decil 8",
+                                                                                           "Decil 9", "Decil 10")))
+
+
+    gastos_ingresos_exp = na.omit(gastos_ingresos_exp)
+
+
+    # calculo de proporciones medias del gasto en alimentacion (deciles)
+    mean_share = data.frame(c("Decil 1", "Decil 2",
+                              "Decil 3", "Decil 4",
+                              "Decil 5", "Decil 6",
+                              "Decil 7", "Decil 8",
+                              "Decil 9", "Decil 10"))
+    colnames(mean_share) = "decil"
+    mean_share$share = NA
+
+    for (i in 1:nrow(mean_share)) {
+      df = gastos_ingresos_exp %>% filter(deciles %in% mean_share$decil[i])
+      mean_share$share[i] = mean(df$share_gasto)
+    }
+
+
+    deciles_gasto = data.frame(
+      deciles = levels(as.factor(mean_share$decil)))
+    # Hacer el merge con el DataFrame `new_share` para añadir las proporciones
+    deciles_gasto <- merge(deciles_gasto, mean_share, by.x = "deciles", by.y = "decil", all.x = TRUE)
+
   }
-
-  # Ejecutar la función para descargar y cargar datos
-  descargar_y_cargar_datos_ecv(2022)
-
-  #-------------------------------#
-  #     Depuración previa         #
-  #-------------------------------#
-
-  # Obtener nombres de los dataframes en el entorno específico ECV_Year si existe
-  envr_name <- paste0("ECV_", 2022)
-
-
-  gastos_hogares <- get(envr_name, envir = data_ECV)$Gastos_de_los_hogares__Gastos_por_Item_
-  hogares <- get(envr_name, envir = data_ECV)$Caracteristicas_y_composicion_del_hogar
-  vivienda <- get(envr_name, envir = data_ECV)$Datos_de_la_vivienda
-  servicios <- get(envr_name, envir = data_ECV)$Servicios_del_hogar
-
-
-
-
-  # Lista de ciudades y sus códigos correspondientes
-  ciudades_codigos <- c("63" = "ARMENIA", "8" = "BARRANQUILLA", "11" = "BOGOTA",
-                        "68" = "BUCARAMANGA", "76" = "CALI", "13" = "CARTAGENA",
-                        "54" = "CUCUTA", "18" = "FLORENCIA", "73" = "IBAGUE",
-                        "17" = "MANIZALES", "5" = "MEDELLIN", "23" = "MONTERIA",
-                        "41" = "NEIVA", "52" = "PASTO", "66" = "PEREIRA",
-                        "19" = "POPAYAN", "27" = "QUIBDO", "44" = "RIOHACHA",
-                        "47" = "SANTA MARTA", "70" = "SINCELEJO", "15" = "TUNJA",
-                        "20" = "VALLEDUPAR", "50" = "VILLAVICENCIO")
-
-  # Función para obtener el código de ciudad a partir de la ciudad asignada
-  obtener_codigo_ciudad <- function(ciudad_asignada, ciudades_codigos) {
-    codigo <- names(ciudades_codigos)[match(ciudad_asignada, unname(ciudades_codigos))]
-    return(codigo)
-  }
-
-  codigo_ciudad=obtener_codigo_ciudad(ciudad_asignada,ciudades_codigos)
-
-  vivienda_ciudad <- vivienda %>% filter(P1_DEPARTAMENTO == as.numeric(codigo_ciudad))
-  gastos_hogares_ciudad = gastos_hogares %>% filter(DIRECTORIO %in% vivienda_ciudad$DIRECTORIO)
-  servicios_ciudad = servicios %>% filter(DIRECTORIO %in% vivienda_ciudad$DIRECTORIO)
-
-  # Selección de las variables de interés
-  vivienda_ciudad_1 = vivienda_ciudad[c("DIRECTORIO", "SECUENCIA_ENCUESTA", "SECUENCIA_P",
-                                        "ORDEN", "P1_DEPARTAMENTO", "CLASE", "FEX_C",
-                                        "CANT_HOG_COMPLETOS", "CANT_HOGARES_VIVIENDA")]
-
-  gastos_hogares_ciudad_1 = gastos_hogares_ciudad[c("DIRECTORIO", "SECUENCIA_ENCUESTA", "SECUENCIA_P",
-                                                    "ORDEN", "FEX_C", "P3204", "P3204S1", "P3204S2")]
-
-  servicios_ciudad_1 = servicios_ciudad[c("DIRECTORIO", "SECUENCIA_ENCUESTA", "SECUENCIA_P", "ORDEN",
-                                          "I_HOGAR", "I_UGASTO", "PERCAPITA", "I_OU")]
-
-  ###############################
-  ## Cálculo del ingreso para  ##
-  ##       cada hogar          ##
-  ###############################
-  # construir id
-  servicios_ciudad_1$id = paste0(servicios_ciudad$DIRECTORIO,
-                                 "-",servicios_ciudad$ORDEN)
-
-  # ingresos hogares
-  hogar_ingresos = servicios_ciudad_1[c("id", "I_HOGAR")]
-
-  ###########################################
-  ## Cálculo del gasto total y  gasto      ##
-  ##   en alimentación para cada hogar     ##
-  ###########################################
-
-
-  # construir id
-  gastos_hogares_ciudad_1$id = paste0(gastos_hogares_ciudad_1$DIRECTORIO,
-                                      "-",gastos_hogares_ciudad_1$SECUENCIA_P)
-
-  # reemplazar NA por 0 en las variables de gasto
-  gastos_hogares_ciudad_1$P3204S1[is.na(gastos_hogares_ciudad_1$P3204S1)] = 0
-
-  gastos_hogares_ciudad_1$P3204S2[is.na(gastos_hogares_ciudad_1$P3204S2)] = 0
-
-  # construir base de datos de recepción
-  hogar_gastos = data.frame(levels(as.factor(gastos_hogares_ciudad_1$id)))
-  hogar_gastos$gasto_total = NA
-  hogar_gastos$gasto_alimentos = NA
-  colnames(hogar_gastos) = c("id", "gasto_total", "gasto_alimentos")
-
-
-  for (k in 1:nrow(hogar_gastos)) {
-    # bucle para gasto total
-    df_1 = data.frame()
-    df_1 = gastos_hogares_ciudad_1 %>% filter(id %in% hogar_gastos$id[k])
-    hogar_gastos$gasto_total[k] = sum(df_1$P3204S1) + sum(df_1$P3204S2)
-    #bucle para gasto en alimentos
-    df_2 = df_1 %>% filter(P3204 %in% c(1:26,32))
-    hogar_gastos$gasto_alimentos[k] = sum(df_2$P3204S1) + sum(df_2$P3204S2)
-  }
-
-  ###################################
-  ## Cálculo de las proporciones   ##
-  ## (desde el ingreso y el gasto) ##
-  ###################################
-
-  # recuperar el factor de expansión
-  hogar_gastos_dep = merge(hogar_gastos, gastos_hogares_ciudad_1[c("id","FEX_C")], by = "id")
-  hogar_gastos_dep = hogar_gastos_dep[!duplicated(hogar_gastos_dep),]
-
-  # eliminar valores nulos en alimentación
-  #hogar_gastos_dep = hogar_gastos_dep %>% filter(gasto_alimentos != 0)
-
-  # merge gastos-ingresos
-  gastos_ingresos = merge(hogar_gastos_dep, hogar_ingresos, by = "id")
-
-  # implementación del factor de expansión
-
-  gastos_ingresos_exp = as.data.frame(matrix(ncol = ncol(gastos_ingresos)))
-  colnames(gastos_ingresos_exp) = colnames(gastos_ingresos)
-
-
-  gastos_ingresos_exp <- gastos_ingresos %>%
-    dplyr::slice(rep(1:n(), times = gastos_ingresos$FEX_C)) %>%
-    na.omit()
-
-
-  # proporción del gasto
-  gastos_ingresos_exp$share_gasto = gastos_ingresos_exp$gasto_alimentos/gastos_ingresos_exp$gasto_total
-
-
-  # Nota: los resultados para la proporción del ingresos no tiene resultados realistas
-
-  ############
-  ## Ad hoc ##
-  ############
-
-  # eliminar gastos e ingresos nulos
-  #gastos_ingresos_exp = gastos_ingresos_exp %>% filter(I_HOGAR != 0)
-  #gastos_ingresos_exp = gastos_ingresos_exp %>% filter(gasto_total != 0)
-
-
-  ############################################
-  ## Calcular deciles segun la clasificacion ##
-  ##        derivada de la GEIH       ##
-  #############################################
-
-  # diferenciar los ingresos del hogar segun la clasificacion por
-  # deciles y quintiles de la GEIH
-  deciles = quantile(dataset_2$ingresos, probs = seq(0, 1, by = .1))
-
-  gastos_ingresos_exp = gastos_ingresos_exp %>% mutate(deciles = cut(I_HOGAR, deciles, c("Decil 1", "Decil 2",
-                                                                                         "Decil 3", "Decil 4",
-                                                                                         "Decil 5", "Decil 6",
-                                                                                         "Decil 7", "Decil 8",
-                                                                                         "Decil 9", "Decil 10")))
-
-
-  gastos_ingresos_exp = na.omit(gastos_ingresos_exp)
-
-
-  # calculo de proporciones medias del gasto en alimentacion (deciles)
-  mean_share = data.frame(c("Decil 1", "Decil 2",
-                            "Decil 3", "Decil 4",
-                            "Decil 5", "Decil 6",
-                            "Decil 7", "Decil 8",
-                            "Decil 9", "Decil 10"))
-  colnames(mean_share) = "decil"
-  mean_share$share = NA
-
-  for (i in 1:nrow(mean_share)) {
-    df = gastos_ingresos_exp %>% filter(deciles %in% mean_share$decil[i])
-    mean_share$share[i] = mean(df$share_gasto)
-  }
-
-
-  deciles_gasto = data.frame(levels(as.factor(mean_share$decil)))
-  colnames(deciles_gasto) = "deciles"
-  deciles_gasto$share = mean_share$share
-
 
   cat("     Finalizado ✓ \n")
 
