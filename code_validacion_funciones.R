@@ -14,10 +14,10 @@ Proporción.G.Alimento <- c(0.39, 0.39, 0.36, 0.36,
 # parametro  share.n y sin el parametro que calula los share promedios
 
 
-Data22.Icol= IncomeCol(Month=9,Year=2022,City="Cali",
-                       share.n = Proporción.G.Alimento )
+Data22.Icol= IncomeCol1(Month=9,Year=2022,City="Cali",
+                       Share.n = Proporción.G.Alimento )
 
-Data22.Icol= IncomeCol(Month=9,Year=2022,City="Cali" )
+Data22.Icol= IncomeCol1(Month=9,Year=2022,City="Cali" )
 
 Data22.Icol <- Data22.Icol %>%
   mutate(deciles = factor(deciles,
@@ -77,7 +77,7 @@ view(tab_desva.22Icol)
 
 
 
-#------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
 
 
@@ -91,7 +91,12 @@ view(tab_desva.22Icol)
 # para Dietas en Hogares                            #
 #...................................................#
 
+# Paquete: cargar y tambien para desactivar del R
+library(FoodpriceR)
 detach("package:FoodpriceR", unload = TRUE)
+
+
+
 data22 = DataCol(Month = 9 , Year = 2022, City = "cali", Percentile = 0.25) # Base de datos de septiembre del 2022 de cali
 
 # Nota: Estraigo los aliemntos que no necesito debido a que la funcion Hcost
@@ -106,7 +111,6 @@ data22.1 <- data22 %>%
 #REQUERIMIENTOS CALI
 # 2022 septiembre  ciudad cali
 
-library(FoodpriceR)
 library(readxl)
 
 ruta <- file.path("C:", "Users", "portatil", "Downloads", "workFoodprice", "EER_Cali", "EER_Cali.xlsx")
@@ -124,14 +128,14 @@ data("diverse")
 comida_exluida <- c("Sal yodada", "Queso campesino", "Mayonesa doy pack")
 class(comida_exluida)
 
-Diet_HC2NEW = HCost1(Data = data22,
+Diet_HC2NEW = HCost(Data = data22,
                   Household = Household,
                   ERR = EERCali.coca, EER_LL = EE.LLcali,
                   UL = ULcali %>% select(-Energy),
                   Serv = serv.cali, Diverse= diverse,
                   exclude = c("Sal yodada", "Queso campesino", "Mayonesa doy pack")
                   )
-library(FoodpriceR)
+
 Diet_HC2_pack = HCost(Data = data22.1,
                      Household = Household,
                      ERR = EERCali.coca, EER_LL = EE.LLcali,
@@ -154,6 +158,7 @@ Data22.AffordNEW <- Afford1(Hexpense = Data22.Icol,
                          Model_CoCA = Diet_HC2$Model_CoCA,
                         Model_CoNA = Diet_HC2$Model_CoNA,
                         Model_CoRD = Diet_HC2$Model_CoRD)
+library(FoodpriceR)
 
 Data22.Afford_pack <- Afford(Hexpense = Data22.Icol,
                             Model_CoCA = Diet_HC2$Model_CoCA,
@@ -162,7 +167,7 @@ Data22.Afford_pack <- Afford(Hexpense = Data22.Icol,
 
 
 Data22.AffordNEW$Poverty_outcome == Data22.Afford_pack$Poverty_outcome
-
+identical(Data22.AffordNEW$Poverty_outcome, Data22.Afford_pack$Poverty_outcome)
 
 
 # Resultados de los indicadores de asequibilidad calculados para los modelos
@@ -170,11 +175,59 @@ Data22.AffordNEW$Poverty_outcome == Data22.Afford_pack$Poverty_outcome
 
 
 
+#------------------------------------------------------------------#
+#Validacion de la funcion CONA correger los requerimientos-------- #
+#------------------------------------------------------------------#
+
+
+library(FoodpriceR)
+
+#Dieta CoNa
+Modelo2.2=CoNA2(data=data22,
+               EER_LL = EE.LLcali,
+               UL= ULcali %>% select(-Energy),
+               exclude = c("Sal yodada",
+                           "Queso campesino",
+                           "Mayonesa doy pack"))
+
+Modelo2.2$cost
+
+# Análisis: solución para el caso Age == >70 años & Sex == 0 (No hay convergencia)
+
+EE.LLcali_op2 = EE.LLcali
+EE.LLcali_op2[8,4:19] = EE.LLcali_op2[8,4:19]*0.97
+
+Modelo1.2.2=CoNA(data=data22,
+                 EER_LL = EE.LLcali_op2,
+                 UL= ULcali %>% select(-Energy),
+                 exclude = c("Sal yodada",
+                             "Queso campesino",
+                             "Mayonesa doy pack"))
+Modelo1.2.2$cost # Se encuentra solución en todos los casos
 
 
 
 
 
 
+
+
+EE.LLcali_op1 = EE.LLcali
+EE.LLcali_op1$Magnesium[8] = EE.LLcali_op1$Magnesium[8]*0.97
+
+Modelo1.2.1=CoNA(data=data22,
+                 EER_LL = EE.LLcali_op1,
+                 UL= ULcali %>% select(-Energy),
+                 exclude = c("Sal yodada",
+                             "Queso campesino",
+                             "Mayonesa doy pack"))
+Modelo1.2.1$cost # Se encuentra solución en todos los casos
+
+
+
+
+
+
+Modelo2.2$cost == Modelo1.2.1$cost
 
 

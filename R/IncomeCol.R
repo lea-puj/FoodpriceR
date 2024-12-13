@@ -2,7 +2,7 @@
 #           Definición de la función             #
 #------------------------------------------------#
 
-IncomeCol  <- function(Month, Year, City, share.n=NULL) {
+IncomeCol  <- function(Month, Year, City, Share.n=NULL) {
 
   # Función para validar parámetros
   validar_parametros <- function(parametro, tipo, rango = NULL, longitud = NULL) {
@@ -44,9 +44,9 @@ IncomeCol  <- function(Month, Year, City, share.n=NULL) {
   validar_parametros(Month, "numeric", c(1, 12))
   validar_parametros(Year, "numeric", c(2022, 2023))
   validar_parametros(City, "character")
-  # Solo validar share.n si no es NULL
-  if (!is.null(share.n)) {
-    validar_parametros(share.n, "vector", longitud = 10)  # Validar longitud solo si share.n no es NULL
+  # Solo validar Share.n si no es NULL
+  if (!is.null(Share.n)) {
+    validar_parametros(Share.n, "vector", longitud = 10)  # Validar longitud solo si Share.n no es NULL
   }
 
   # Mensaje de inicio del módulo
@@ -2650,10 +2650,10 @@ IncomeCol  <- function(Month, Year, City, share.n=NULL) {
   #----------------------------------------------------------------------------------#
   #    Modulo 2: Proporcion del gasto en alimentación -ECV                           #
   #----------------------------------------------------------------------------------#
-  if (!is.null(share.n)) {
+  if (!is.null(Share.n)) {
     # Validar que share.n tenga exactamente 10 valores
-    if (length(share.n) != 10) {
-      stop("El vector 'share.n' debe tener exactamente 10 valores (uno por cada decil).")
+    if (length(Share.n) != 10) {
+      stop("El vector 'Share.n' debe tener exactamente 10 valores (uno por cada decil).")
     }
 
     # Crear el data.frame con las proporciones asignadas manualmente
@@ -2661,7 +2661,7 @@ IncomeCol  <- function(Month, Year, City, share.n=NULL) {
       decil = c("Decil 1", "Decil 2", "Decil 3", "Decil 4",
                 "Decil 5", "Decil 6", "Decil 7", "Decil 8",
                 "Decil 9", "Decil 10"),
-      share = share.n
+      share = Share.n
     )
 
     # Crear un DataFrame con los niveles de los deciles
