@@ -359,6 +359,6 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
     return(invisible(List_CoNA))
 
   }
-}
+
 
 
