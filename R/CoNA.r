@@ -2,14 +2,8 @@
 #                    SEGUNDA FUNCIÓN: MODELO 2: DIETA ADEC EN NUTRIENTES                  #
 #-----------------------------------------------------------------------------------------#
 
-CoNA2=function(data,EER_LL,UL,exclude=NULL){
+CoNA=function(data,EER_LL,UL,exclude=NULL){
 
-  #data=data22
-  #EER_LL=EE.LLcali
-  #UL=ULcali %>% select(-Energy)
-  #exclude= c("Sal yodada",
-             #"Queso campesino",
-             #"Mayonesa doy pack")
   #------------------------------------------------------------------------------------------#
   #                       PRIMERA ETAPA: VALIDACIÓN DE LIBRERIAS                             #
   #-----------------------------------------------------------------------------------------#
@@ -114,7 +108,6 @@ CoNA2=function(data,EER_LL,UL,exclude=NULL){
   #               CLICLO PARA CADA SEXO                   #
   #-------------------------------------------------------#
   for (sexo_nombre in sexo_nombre) {
-    #sexo_nombre=sexo_nombre[1]
     # ------------ PREPARACIÓN DEL MODELO E IDENTI DE NUTRIENTES
 
     if ("Sex" %in% colnames(EER_LL)){
@@ -188,7 +181,7 @@ CoNA2=function(data,EER_LL,UL,exclude=NULL){
 
     # ------------ -------------------- SOLUCIÓN DEL MODELO
     for (i in seq_along(Age)) { # Ciclo para cada edad
-     #i=seq_along(Age)[1]
+
       CoNA <- lp(direction = "min",
                  objective.in = Precio,
                  const.mat = Coef.Restriq,
@@ -206,10 +199,10 @@ CoNA2=function(data,EER_LL,UL,exclude=NULL){
         resultados_temp <- list() # Lista para guardar resultados temporales
 
         while (!solucion_encontrada & porcentaje > 0.9) {
-          #porcentaje = 0.97
+
           DRI_min_li_temp <- DRI_min_li %>% select(-Energy )
           for (j in 1:ncol(DRI_min_li_temp)) {
-            #j=7
+
             DRI_min_li_temp1 = DRI_min_li_temp
             DRI_min_li_temp1[i,j] <- DRI_min_li_temp1[i,j] * porcentaje
 
@@ -231,7 +224,6 @@ CoNA2=function(data,EER_LL,UL,exclude=NULL){
           if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0) {
             solucion_encontrada = TRUE
             CoNA = CoNA.x
-            #Limitaciones=Limitaciones
             print(paste0("The CoNA for individuals of ", sexo_nombre, " and the age group ", Age[i]," was estimated to fulfill ", porcentaje*100,"% of the minimum required intake of ",nutrienteid, ". No solution was identified that fully satisfies 100% of the requirements"))
           } else {
             porcentaje <- porcentaje - 0.01
