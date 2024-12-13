@@ -232,7 +232,7 @@ CoNA2=function(data,EER_LL,UL,exclude=NULL){
             solucion_encontrada = TRUE
             CoNA = CoNA.x
             #Limitaciones=Limitaciones
-            print(paste0("The CoNA for individuals of ", sexo_nombre, " and the age group ", Age[i]," was estimated to fulfill ", porcentaje*100,"% of the minimum required intake of ",nutrienteid, ". No solution was identified that fully satisfies"))
+            print(paste0("The CoNA for individuals of ", sexo_nombre, " and the age group ", Age[i]," was estimated to fulfill ", porcentaje*100,"% of the minimum required intake of ",nutrienteid, ". No solution was identified that fully satisfies 100% of the requirements"))
           } else {
             porcentaje <- porcentaje - 0.01
           }
