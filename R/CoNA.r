@@ -224,7 +224,7 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
           if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0) {
             solucion_encontrada = TRUE
             CoNA = CoNA.x
-            print(paste0("The CoNA for individuals of ", sexo_nombre, " and the age group ", Age[i]," was estimated to fulfill ", porcentaje*100,"% of the minimum required intake of ",nutrienteid, ". No solution was identified that fully satisfies 100% of the requirements"))
+            print(paste0("The CoNA for individuals of sex ", sexo_nombre, " and the age group ", Age[i]," was estimated to fulfill ", porcentaje*100,"% of the minimum required intake of ",nutrienteid, ". No solution was identified that fully satisfies 100% of the requirements"))
           } else {
             porcentaje <- porcentaje - 0.01
           }
