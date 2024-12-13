@@ -119,7 +119,7 @@ EE.LLcali <- read_xlsx(ruta, sheet = "EE.LLcali")
 ULcali <- read_xlsx(ruta, sheet = "ULcali")
 serv.cali <- read_xlsx(ruta, sheet = "serv.cali")
 data("diverse")
-
+data("Household")
 
 
 # VALIDADCION HACOST Parametro exclude
@@ -128,7 +128,7 @@ data("diverse")
 comida_exluida <- c("Sal yodada", "Queso campesino", "Mayonesa doy pack")
 class(comida_exluida)
 
-Diet_HC2NEW = HCost(Data = data22,
+Diet_HC2NEW = HCost1(Data = data22,
                   Household = Household,
                   ERR = EERCali.coca, EER_LL = EE.LLcali,
                   UL = ULcali %>% select(-Energy),
@@ -155,15 +155,15 @@ Diet_HC2NEW$Model_CoRD
 # VALIDACION Afford
 
 Data22.AffordNEW <- Afford1(Hexpense = Data22.Icol,
-                         Model_CoCA = Diet_HC2$Model_CoCA,
-                        Model_CoNA = Diet_HC2$Model_CoNA,
-                        Model_CoRD = Diet_HC2$Model_CoRD)
+                         Model_CoCA = Diet_HC2NEW$Model_CoCA,
+                        Model_CoNA = Diet_HC2NEW$Model_CoNA,
+                        Model_CoRD = Diet_HC2NEW$Model_CoRD)
 library(FoodpriceR)
 
 Data22.Afford_pack <- Afford(Hexpense = Data22.Icol,
-                            Model_CoCA = Diet_HC2$Model_CoCA,
-                            Model_CoNA = Diet_HC2$Model_CoNA,
-                            Model_CoRD = Diet_HC2$Model_CoRD)
+                            Model_CoCA = Diet_HC2_pack$Model_CoCA,
+                            Model_CoNA = Diet_HC2_pack$Model_CoNA,
+                            Model_CoRD = Diet_HC2_pack$Model_CoRD)
 
 
 Data22.AffordNEW$Poverty_outcome == Data22.Afford_pack$Poverty_outcome
@@ -206,11 +206,11 @@ Modelo1.2.2=CoNA(data=data22,
 Modelo1.2.2$cost # Se encuentra solución en todos los casos
 
 
+identical(Modelo2.2$cost, Modelo1.2.2$cost)
 
 
 
-
-
+# opcion 2
 
 EE.LLcali_op1 = EE.LLcali
 EE.LLcali_op1$Magnesium[8] = EE.LLcali_op1$Magnesium[8]*0.97

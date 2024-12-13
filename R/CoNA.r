@@ -4,6 +4,12 @@
 
 CoNA2=function(data,EER_LL,UL,exclude=NULL){
 
+  #data=data22
+  #EER_LL=EE.LLcali
+  #UL=ULcali %>% select(-Energy)
+  #exclude= c("Sal yodada",
+             #"Queso campesino",
+             #"Mayonesa doy pack")
   #------------------------------------------------------------------------------------------#
   #                       PRIMERA ETAPA: VALIDACIÓN DE LIBRERIAS                             #
   #-----------------------------------------------------------------------------------------#
@@ -182,7 +188,7 @@ CoNA2=function(data,EER_LL,UL,exclude=NULL){
 
     # ------------ -------------------- SOLUCIÓN DEL MODELO
     for (i in seq_along(Age)) { # Ciclo para cada edad
-     #i=seq_along(Age)[8]
+     #i=seq_along(Age)[1]
       CoNA <- lp(direction = "min",
                  objective.in = Precio,
                  const.mat = Coef.Restriq,
@@ -202,30 +208,34 @@ CoNA2=function(data,EER_LL,UL,exclude=NULL){
         while (!solucion_encontrada & porcentaje > 0.9) {
           #porcentaje = 0.97
           DRI_min_li_temp <- DRI_min_li %>% select(-Energy )
-          DRI_min_li_temp[i, ] <- DRI_min_li_temp[i, ] * porcentaje
+          for (j in 1:ncol(DRI_min_li_temp)) {
+            #j=7
+            DRI_min_li_temp1 = DRI_min_li_temp
+            DRI_min_li_temp1[i,j] <- DRI_min_li_temp1[i,j] * porcentaje
 
-
-
-          Limitaciones=cbind(DRI_min_li %>% select(Energy),
-                             DRI_min_li_temp,DRI_max_li)
-
-          CoNA.x <- lp(
-            direction = "min",
-            objective.in = Precio,
-            const.mat = Coef.Restriq,
-            const.dir = constr_signs,
-            const.rhs = as.vector(unlist(Limitaciones[i, , drop = FALSE])),
-            compute.sens = TRUE
-          )
-
+            Limitaciones=cbind(DRI_min_li %>% select(Energy),
+                               DRI_min_li_temp1,DRI_max_li)
+            CoNA.x <- lp(
+              direction = "min",
+              objective.in = Precio,
+              const.mat = Coef.Restriq,
+              const.dir = constr_signs,
+              const.rhs = as.vector(unlist(Limitaciones[i, , drop = FALSE])),
+              compute.sens = TRUE
+            )
+            if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0) {
+              nutrienteid = names(DRI_min_li_temp1)[j]
+              break
+            }
+          }
           if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0) {
             solucion_encontrada = TRUE
             CoNA = CoNA.x
-            print(paste0("The CoNA for sex ", sexo_nombre ," and age group ",Age[i]," was estimated to meet ", porcentaje*100,"% of the lower limits of nutrient intake, with no solution identified that fully satisfies 100% of the requirements" ))
+            #Limitaciones=Limitaciones
+            print(paste0("The CoNA for individuals of ", sexo_nombre, " and the age group ", Age[i]," was estimated to fulfill ", porcentaje*100,"% of the minimum required intake of ",nutrienteid, ". No solution was identified that fully satisfies"))
           } else {
             porcentaje <- porcentaje - 0.01
           }
-
         }
       }
       # Guardar estructura de intercambios
