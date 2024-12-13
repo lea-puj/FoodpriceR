@@ -686,7 +686,8 @@ IncomeCol  <- function(Month, Year, City, Share.n=NULL) {
   for (i in 1:8) {
     if (any(avg_horas_pa$p6430 == i)) {
       replacement_value <- avg_horas_pa$avg[avg_horas_pa$p6430 == i &
-                                              !is.na(avg_horas_pa$p6430)]
+                                            !is.na(avg_horas_pa$p6430)]
+
       df_total$horas_pa[df_total$horas_pa == 999 & df_total$p6430 == i] <- replacement_value
     }
   }
