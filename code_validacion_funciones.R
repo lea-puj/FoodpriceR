@@ -231,18 +231,33 @@ Modelo1.2.1$cost # Se encuentra solución en todos los casos
 Modelo2.2$cost == Modelo1.2.1$cost
 
 
+datacolmx2
 
-#-------------------------------------------------------------------#
-
-
-#-----------------------------------------------------#
-# Comprobacion de las funciones con data mx---------- #
-#-----------------------------------------------------#
-
-datacolmx2 <- readRDS("C:/Users/portatil/Downloads/FoodpriceR/datacolmx2.rds")
-EER_ULmx2 <- readRDS("C:/Users/portatil/Downloads/FoodpriceR/EER_ULmx2.rds")
-EER_LLmx2 <- readRDS("C:/Users/portatil/Downloads/FoodpriceR/EER_LLmx2.rds")
-servmx1 <- readRDS("C:/Users/portatil/Downloads/FoodpriceR/servmx1.rds")
+datacolmx2 <- as.data.frame(datacolmx2)
+EER_LLmx2 <- as.data.frame(EER_LLmx2)
+EER_ULmx2<- as.data.frame(EER_ULmx2)
+conamx <- CoNA(data = datacolmx2 ,
+               EER_LL = as.data.frame(EER_LLmx2),
+               UL=as.data.frame(EER_ULmx2))
 
 
 
+
+
+
+library(readxl)
+data22 <- read_excel("C:/Users/portatil/Downloads/workFoodprice/Entregables/data22.xlsx",
+                     sheet = "dataCali22")
+
+library(readxl)
+EER <- read_excel("C:/Users/portatil/Downloads/workFoodprice/EER_Cali/EER_CALI.xlsx",
+                  sheet = "EERCali.coca")
+
+
+library(readxl)
+EER_ll <- read_excel("C:/Users/portatil/Downloads/workFoodprice/EER_Cali/EER_CALI.xlsx",
+                       sheet = "EE.LLcali")
+
+library(readxl)
+EER_ul <- read_excel("C:/Users/portatil/Downloads/workFoodprice/EER_Cali/EER_CALI.xlsx",
+                       sheet = "ULcali")
