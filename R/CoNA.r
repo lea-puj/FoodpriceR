@@ -3,6 +3,9 @@
 #-----------------------------------------------------------------------------------------#
 
 CoNA=function(data,EER_LL,UL,exclude=NULL){
+  data=as.data.frame(datacolmx2)
+  EER_LL= as.data.frame(EER_LLmx2)
+  UL= as.data.frame(EER_ULmx2)
 
   #------------------------------------------------------------------------------------------#
   #                       PRIMERA ETAPA: VALIDACIÓN DE LIBRERIAS                             #
@@ -108,6 +111,7 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
   #               CLICLO PARA CADA SEXO                   #
   #-------------------------------------------------------#
   for (sexo_nombre in sexo_nombre) {
+    sexo_nombre=sexo_nombre[1]
     # ------------ PREPARACIÓN DEL MODELO E IDENTI DE NUTRIENTES
 
     if ("Sex" %in% colnames(EER_LL)){
@@ -153,16 +157,18 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
     DRI_min_li <- DRI_min_li %>% select(any_of(nombres_comunes))
     DRI_max_li <- DRI_max_li %>% select(any_of(nombres_comunes))
 
+
+
     # Unir los nutrientes de aliemntos en min y max
     Sin_EER= DF_Nutrientes_ALimentos %>% select(-Energy)
     DF_Nutrientes_ALimentos=cbind(DF_Nutrientes_ALimentos,Sin_EER)
 
     # Matriz de coef de restricción al modelo (ENERGIA y nutrientes)
     Coef.Restriq=DF_Nutrientes_ALimentos %>% as.matrix() %>% t()
-
+    dim(Coef.Restriq)
     #signos de las restricciones
     constr_signs = c("=", rep(">=", ncol(DRI_min_li)-1), rep("<=", length(DRI_max_li)))
-
+    dim(constr_signs)
     #Unir los EER, minx y max
     Limitaciones=cbind(DRI_min_li,DRI_max_li)
 
@@ -181,6 +187,12 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
 
     # ------------ -------------------- SOLUCIÓN DEL MODELO
     for (i in seq_along(Age)) { # Ciclo para cada edad
+      i= 1
+      view(Coef.Restriq)
+      n_restricciones <- nrow(Coef.Restriq)
+      length(constr_signs)  # Debe ser igual a n_restricciones
+      length(as.vector(unlist(Limitaciones[i, , drop = FALSE])))  # También debe ser igual a n_restricciones
+
 
       CoNA <- lp(direction = "min",
                  objective.in = Precio,
