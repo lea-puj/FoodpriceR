@@ -255,12 +255,18 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
           }
 
       Intercambios_CoNA <- rbind(Intercambios_CoNA, temp_df)
+
+      if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0){
       temp_df <- data.frame(
         Demo_Group = Age[i],
         Sex = as.numeric(sexo_nombre),
         cost_day = cost_day,
         Cost_1000kcal = (CoNA$objval / as.vector(unlist(Limitaciones[i, , drop = FALSE])[1]) * 1000)
+      )} else {
+        temp_df <- data.frame(
+        Demo_Group = NA, Sex = NA, cost_day = NA, Cost_1000kcal = NA
       )
+      }
 
       Costo_T <- rbind(Costo_T, temp_df)
 
@@ -358,7 +364,13 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
 
     # retorno
 
-    cat("CoNA: Average daily cost per 1000 kilocalories is: ", mean(Costo_CoNA$Cost_1000kcal, na.rm = TRUE))
+ if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0){
+     cat("CoNA: Average daily cost per 1000 kilocalories is: ", mean(Costo_CoNA$Cost_1000kcal, na.rm = TRUE))
+ } else {
+    cat("CoNA: No feasible solution found.\n")
+      }
+        
+    
 
     return(invisible(List_CoNA))
 
