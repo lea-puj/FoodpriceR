@@ -247,14 +247,14 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
         Demo_Group = Age[i],
         Sex = as.numeric(sexo_nombre),
         Group = if ("Group" %in% colnames(data)) Grupo_sex else NA
-      )} else {
+      )
+        cost_day <- sum(CoNA$solution * Precio)} else {
       temp_df <- data.frame(Food = NA, quantity = NA, Demo_Group = NA,
                   Sex = NA, Group = NA)
+          cost_day <- NA
           }
 
       Intercambios_CoNA <- rbind(Intercambios_CoNA, temp_df)
-
-      cost_day <- sum(CoNA$solution * Precio)
       temp_df <- data.frame(
         Demo_Group = Age[i],
         Sex = as.numeric(sexo_nombre),
