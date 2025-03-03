@@ -240,13 +240,17 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
         Grupo_sex <- data$Group[indices_coincidencia]
       }
 
+      if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0){
       temp_df <- data.frame(
         Food = Food[Alimentos_sol],
         quantity = (cantidades_intercambio * 100),
         Demo_Group = Age[i],
         Sex = as.numeric(sexo_nombre),
         Group = if ("Group" %in% colnames(data)) Grupo_sex else NA
-      )
+      )} else {
+      temp_df <- data.frame(Food = NA, quantity = NA, Demo_Group = NA,
+                  Sex = NA, Group = NA)
+          }
 
       Intercambios_CoNA <- rbind(Intercambios_CoNA, temp_df)
 
