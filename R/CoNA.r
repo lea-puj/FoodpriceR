@@ -364,7 +364,7 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
 
     # retorno
 
- if (CoNA.x$status == 0 && sum(CoNA.x$solution) != 0){
+ if (CoNA$status == 0 && sum(CoNA$solution) != 0){
      cat("CoNA: Average daily cost per 1000 kilocalories is: ", mean(Costo_CoNA$Cost_1000kcal, na.rm = TRUE))
  } else {
     cat("CoNA: No feasible solution found.\n")
