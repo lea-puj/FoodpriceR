@@ -249,8 +249,8 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
         Group = if ("Group" %in% colnames(data)) Grupo_sex else NA
       )
         cost_day <- sum(CoNA$solution * Precio)} else {
-      temp_df <- data.frame(Food = NA, quantity = NA, Demo_Group = NA,
-                  Sex = NA, Group = NA)
+      temp_df <- data.frame(Food = NA, quantity = NA, Demo_Group = Age[i],
+                  Sex = as.numeric(sexo_nombre), Group = NA)
           cost_day <- NA
           }
 
@@ -264,7 +264,7 @@ CoNA=function(data,EER_LL,UL,exclude=NULL){
         Cost_1000kcal = (CoNA$objval / as.vector(unlist(Limitaciones[i, , drop = FALSE])[1]) * 1000)
       )} else {
         temp_df <- data.frame(
-        Demo_Group = NA, Sex = NA, cost_day = NA, Cost_1000kcal = NA
+        Demo_Group = Age[i], Sex = as.numeric(sexo_nombre), cost_day = NA, Cost_1000kcal = NA
       )
       }
 
