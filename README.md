@@ -16,7 +16,18 @@ En el presente repositorio encontrará la versión 1.0.0 del paquete Foodprice, 
 - **IncomeCol:** Carga y procesa los ingresos corrientes mensuales y la proporción destinada a alimentos para hogares urbanos de las 13 principales ciudades y áreas metropolitanas de Colombia (GEIH–Marco 2018 y ECV).
 - **HCost:** Integra los costos diarios mínimos de las tres dietas (CoCA, CoNA y CoRD) para un hogar representativo definido por edad y sexo de sus miembros, usando como insumo las mismas estructuras de datos de Foodprice (precios, composición nutricional, requerimientos energéticos y de nutrientes). Devuelve el costo total y per cápita de cada tipo de dieta para el hogar.
 - **Afford:** A partir del costo mínimo de las dietas y de una base con ingresos y gasto en alimentos de los hogares, calcula indicadores de asequibilidad: proporción de hogares que no pueden costear la dieta, razón costo/gasto y brechas de acceso.
-  
+
+---
+
+### :books: **Documentación**
+
+- **Funciones para la estimación del costo de la dieta** (*DataCol, CoCA, CoNA, CoRD, HCost*):  
+  [Foodprice – documentación técnica](https://github.com/lea-puj/FoodpriceR/blob/main/Foodprice-%20documentation.pdf)
+
+- **Funciones para el análisis de asequibilidad** (*Afford e IncomeCol*):  
+  [Foodprice v2 – documentación CRAN](https://github.com/lea-puj/FoodpriceR/blob/main/Foodpricev2-CRAN.pdf)
+
+---
 
 #
 
