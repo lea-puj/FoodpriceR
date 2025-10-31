@@ -1,7 +1,7 @@
 # FoodpriceR
 
 <p align="center">
-<a name="top" href="#"> <img src="https://github.com/lea-puj/FoodpriceR/blob/main/logo_FoodPriceR.png" alt="mf-dots" height="40%" width="60%"/> </a>
+<a name="top" href="#"> <img src="https://github.com/lea-puj/FoodpriceR/blob/main/logo_FoodPriceR.png" alt="mf-dots" height="20%" width="30%"/> </a>
 </p>
 
 ---
