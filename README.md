@@ -13,6 +13,11 @@ En el presente repositorio encontrará la versión 1.0.0 del paquete Foodprice, 
 - **CoCA:** Calcula el costo diario mínimo de una dieta adecuada en calorías para un individuo, basándose en su requerimiento energético estimado.
 - **CoNA:** Calcula el costo diario mínimo de una dieta adecuada en nutrientes para un individuo según sus ingestas de referencia dietética. 
 - **CoRD:** Calcula el costo diario mínimo de una dieta recomendada o saludable que garantiza diversidad entre los grupos de alimentos, siguiendo las recomendaciones de grupos de alimentos proporcionadas por las Guías Alimentarias Basadas en Alimentos (GABA)
+- **IncomeCol:** Carga y procesa los ingresos corrientes mensuales y la proporción destinada a alimentos para hogares urbanos de las 13 principales ciudades y áreas metropolitanas de Colombia (GEIH–Marco 2018 y ECV).
+- **HCost:** Integra los costos diarios mínimos de las tres dietas (CoCA, CoNA y CoRD) para un hogar representativo definido por edad y sexo de sus miembros, usando como insumo las mismas estructuras de datos de Foodprice (precios, composición nutricional, requerimientos energéticos y de nutrientes). Devuelve el costo total y per cápita de cada tipo de dieta para el hogar.
+- **Afford:** A partir del costo mínimo de las dietas y de una base con ingresos y gasto en alimentos de los hogares, calcula indicadores de asequibilidad: proporción de hogares que no pueden costear la dieta, razón costo/gasto y brechas de acceso.
+  
+
 #
 
 ### :wrench: **Instrucciones de instalación y uso:**
@@ -22,7 +27,7 @@ En el presente repositorio encontrará la versión 1.0.0 del paquete Foodprice, 
 Instale y cargue el paquete alojado en el presente repositorio ejecutando en R:            
 
 ```
-devtools::install_github("Foodprice/Foodprice");library(Foodprice)
+devtools::install_github("lea-puj/FoodpriceR");library(FoodpriceR)
 
 ```
 
@@ -44,6 +49,3 @@ help(DataCol)
 
 Aún no se han encontrado actualizaciones
 
-#        
-
-La versión actual del paquete es:  1.0.0
