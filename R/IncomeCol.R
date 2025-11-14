@@ -57,9 +57,10 @@ IncomeCol  <- function(Month, Year, City, Share.n=NULL) {
   options(warn = -1)
 
   # Carga de librerías
+                            
   Librerias_base <- c("here", "readxl", "tidyverse", "knitr", "moments", "xgboost", "maditr",
                       "mice", "VIM", "dplyr", "finalfit", "plyr", "hdd", "zip", "httr",
-                      "caret", "nnet", "quantreg", "gridExtra", "ggpubr", "cowplot")
+                      "caret", "nnet", "quantreg", "gridExtra", "ggpubr", "cowplot", "reshape2")
   if (!require("pacman")) install.packages("pacman")
   pacman::p_load(char = Librerias_base, character.only = TRUE)
 
