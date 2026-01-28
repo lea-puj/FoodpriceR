@@ -2306,7 +2306,7 @@ IncomeCol  <- function(Month, Year, City, Share.n=NULL) {
     df.aux <- df.aux[c("id", "vn1", "vi1")]
     colnames(df.aux) = c("id", "VN1","VI1")
 
-    plot.aux <- melt(df.aux, id.vars = "id")
+    plot.aux <- reshape2::melt(df.aux, id.vars = "id")
 
     plot.aux$value = plot.aux$value/1000
 
